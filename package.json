@@ -1,5 +1,5 @@
 {
-    "name": "sakai-vue",
+    "name": "SyncDay",
     "version": "4.2.0",
     "scripts": {
         "dev": "vite",
@@ -8,17 +8,43 @@
         "lint": "eslint --fix . --ext .vue,.js,.jsx,.cjs,.mjs --fix --ignore-path .gitignore"
     },
     "dependencies": {
+        "@fullcalendar/core": "^6.1.15",
+        "@fullcalendar/daygrid": "^6.1.15",
+        "@fullcalendar/interaction": "^6.1.15",
+        "@fullcalendar/resource-timeline": "^6.1.15",
+        "@fullcalendar/timegrid": "^6.1.15",
+        "@fullcalendar/vue3": "^6.1.15",
+        "@octokit/rest": "^21.0.2",
+        "@popperjs/core": "^2.11.8",
         "@primevue/themes": "^4.2.4",
+        "@stomp/stompjs": "^7.0.0",
+        "axios": "^1.7.7",
         "chart.js": "3.3.2",
+        "dayjs": "^1.11.13",
+        "dotenv": "^16.4.5",
+        "event-source-polyfill": "^1.0.31",
+        "jwt-decode": "^4.0.0",
+        "lodash": "^4.17.21",
+        "lucide-vue-next": "^0.456.0",
+        "mongodb": "^6.11.0",
+        "octokit": "^4.0.2",
+        "pinia": "^2.2.6",
+        "pinia-plugin-persistedstate": "^4.1.3",
         "primeicons": "^7.0.0",
         "primevue": "^4.2.4",
+        "quill": "^2.0.3",
+        "sockjs-client": "^1.6.1",
+        "sweetalert2": "^11.14.5",
+        "v-calendar": "^3.1.2",
+        "vite-plugin-vue-devtools": "^7.6.7",
         "vue": "^3.4.34",
-        "vue-router": "^4.4.0"
+        "vue-router": "^4.4.0",
+        "ws": "^8.18.0"
     },
     "devDependencies": {
         "@primevue/auto-import-resolver": "^4.2.4",
         "@rushstack/eslint-patch": "^1.8.0",
-        "@vitejs/plugin-vue": "^5.0.5",
+        "@vitejs/plugin-vue": "^5.0.3",
         "@vue/eslint-config-prettier": "^9.0.0",
         "autoprefixer": "^10.4.19",
         "eslint": "^8.57.0",
@@ -27,8 +53,9 @@
         "prettier": "^3.2.5",
         "sass": "^1.55.0",
         "tailwindcss": "^3.4.6",
+        "tailwindcss-debug-screens": "^2.2.1",
         "tailwindcss-primeui": "^0.3.2",
         "unplugin-vue-components": "^0.27.3",
-        "vite": "^5.3.1"
+        "vite": "^5.0.10"
     }
 }
