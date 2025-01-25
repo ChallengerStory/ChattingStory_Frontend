@@ -18,20 +18,20 @@ const SyncDayPreset = definePreset(Aura, {
             800: '#9c314d',
             900: '#802b42',
             950: '#4c1525'
+        },
+        secondary: {
+            50: '#fff9f2', // Lightest shade
+            100: '#fff1e4',
+            200: '#ffe4cc',
+            300: '#fed1a7',
+            400: '#fdc994',
+            500: '#FDC387', // Base apricot color
+            600: '#e5a975',
+            700: '#bf8b5f',
+            800: '#9c714d',
+            900: '#805d40',
+            950: '#4c3725' // Darkest shade
         }
-        // secondary: {
-        //     50: '#fff9f2', // Lightest shade
-        //     100: '#fff1e4',
-        //     200: '#ffe4cc',
-        //     300: '#fed1a7',
-        //     400: '#fdc994',
-        //     500: '#FDC387', // Base apricot color
-        //     600: '#e5a975',
-        //     700: '#bf8b5f',
-        //     800: '#9c714d',
-        //     900: '#805d40',
-        //     950: '#4c3725' // Darkest shade
-        // }
     }
 });
 export default function installPrimeVue(app) {
