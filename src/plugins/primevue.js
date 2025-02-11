@@ -40,7 +40,7 @@ export default function installPrimeVue(app) {
             preset: SyncDayPreset,
             options: {
                 prefix: 'p',
-                darkModeSelector: 'system'
+                darkModeSelector: '.app-dark'
             }
         }
     });

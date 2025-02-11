@@ -2,18 +2,11 @@
     --pink-color: #FE5D86;
     --apricot-color: #FDC387;
     --peach-color: #FF9D85;
-    --mint-color: #15B8A6;
-    --lightmint-color: #1DE1E6;
-    --gray-color: #76818D;
-    --lightgray-color: #969FA8;
-    --muted-text-color: #646464;
-    --outline-gray: #D9D9D9;
-    --background-active: #f0f0f0;
-    --background-inactive: #ccc;
+
 }
 
 body {
-    background-color: transparent;
+    /* background-color: transparent; */
 }
 
 .gradient-vertical {
