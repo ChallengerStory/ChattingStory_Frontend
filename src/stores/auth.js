@@ -57,7 +57,7 @@ export const useAuthStore = defineStore('auth', {
             try {
                 console.log('login을 시작합니다.');
                 const response = await axios.post(
-                    '/user/login',
+                    '/users/login',
                     {
                         email,
                         password
