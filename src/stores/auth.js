@@ -16,13 +16,6 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         setAccessToken(token) {
             this.accessToken = token;
-            if (token) {
-                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-                this.decodeAndSetUserFromToken(token);
-            } else {
-                delete axios.defaults.headers.common['Authorization'];
-                this.user = null;
-            }
         },
 
         decodeAndSetUserFromToken(token) {
@@ -55,7 +48,6 @@ export const useAuthStore = defineStore('auth', {
 
         async login(email, password) {
             try {
-                console.log('login을 시작합니다.');
                 const response = await axios.post(
                     '/users/login',
                     {
@@ -67,7 +59,8 @@ export const useAuthStore = defineStore('auth', {
                     }
                 );
 
-                const accessToken = response.headers['authorization']?.replace('Bearer ', '');
+                const accessToken = response.headers.authorization?.replace('Bearer ', '');
+
                 if (!accessToken) {
                     throw new Error('No access token received');
                 }
@@ -85,7 +78,7 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/user/refresh', {
+                const response = await axios.get('/users/refresh', {
                     withCredentials: true
                 });
 
