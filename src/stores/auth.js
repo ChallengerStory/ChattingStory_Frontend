@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { jwtDecode } from 'jwt-decode';
 import { defineStore } from 'pinia';
 
 export const useAuthStore = defineStore('auth', {
@@ -18,49 +17,11 @@ export const useAuthStore = defineStore('auth', {
             this.accessToken = token;
         },
 
-        decodeAndSetUserFromToken(token) {
-            if (!token) {
-                this.user = null;
-                return;
-            }
-            try {
-                const decoded = jwtDecode(token);
-                // 토큰 만료 체크
-                if (decoded.exp * 1000 < Date.now()) {
-                    this.handleAuthError();
-                    return;
-                }
-
-                this.user = {
-                    email: decoded.sub,
-                    userName: decoded.userName,
-                    profilePhoto: decoded.profilePhoto,
-                    userId: decoded.userId,
-                    userRole: decoded.auth
-                };
-                this.isInitialized = true;
-                return true;
-            } catch (error) {
-                console.error('Token decode failed:', error);
-                this.handleAuthError();
-            }
-        },
-
         async login(email, password) {
             try {
-                const response = await axios.post(
-                    '/users/login',
-                    {
-                        email,
-                        password
-                    },
-                    {
-                        withCredentials: true
-                    }
-                );
+                const response = await axios.post('/users/login', { email, password }, { withCredentials: true });
 
                 const accessToken = response.headers.authorization?.replace('Bearer ', '');
-
                 if (!accessToken) {
                     throw new Error('No access token received');
                 }
@@ -78,11 +39,11 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/users/refresh', {
+                const response = await axios.get('/user/refresh', {
                     withCredentials: true
                 });
 
-                const newAccessToken = response.headers['authorization']?.replace('Bearer ', '');
+                const newAccessToken = response.headers.authorization?.replace('Bearer ', '');
                 if (newAccessToken) {
                     this.setAccessToken(newAccessToken);
                     return true;
@@ -97,20 +58,13 @@ export const useAuthStore = defineStore('auth', {
 
         async logout() {
             try {
-                await axios.post(
-                    '/user/logout',
-                    {},
-                    {
-                        withCredentials: true
-                    }
-                );
+                await axios.post('/users/logout', {}, { withCredentials: true });
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
                 this.handleAuthError();
             }
         },
-
         handleAuthError() {
             this.accessToken = null;
             this.user = null;

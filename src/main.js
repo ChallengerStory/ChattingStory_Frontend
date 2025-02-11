@@ -21,8 +21,6 @@ await authStore.initializeAuth(); // 초기 인증 상태 설정
 
 setupAxiosInterceptors();
 
-await authStore.initializeAuth(); // 초기 인증 상태 설정
-
 installPrimeVue(app);
 
 app.mount('#app');
