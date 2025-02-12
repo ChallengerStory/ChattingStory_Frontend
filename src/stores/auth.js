@@ -25,8 +25,12 @@ export const useAuthStore = defineStore('auth', {
                 if (!accessToken) {
                     throw new Error('No access token received');
                 }
-
+                console.log(accessToken);
                 this.setAccessToken(accessToken);
+                this.isInitialized = true;
+
+                console.log(response.data);
+                this.user = { ...response.data };
                 return true;
             } catch (error) {
                 console.error('Login failed:', error);
@@ -46,6 +50,9 @@ export const useAuthStore = defineStore('auth', {
                 const newAccessToken = response.headers.authorization?.replace('Bearer ', '');
                 if (newAccessToken) {
                     this.setAccessToken(newAccessToken);
+                    console.log(newAccessToken);
+                    this.user = { ...response.data };
+                    this.isInitialized = true;
                     return true;
                 }
                 return false;

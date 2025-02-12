@@ -4,8 +4,8 @@ import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const email = ref('');
-const password = ref('');
+const email = ref('1etterh.dev@syncday.com');
+const password = ref('1234');
 const checked = ref(false);
 
 const authStore = useAuthStore();
