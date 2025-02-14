@@ -1,5 +1,4 @@
 <script setup>
-import FloatingConfigurator from '@/components/FloatingConfigurator.vue';
 import { useAuthStore } from '@/stores/auth';
 import { ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
@@ -37,7 +36,7 @@ const handleLogin = async () => {
 </script>
 
 <template>
-    <FloatingConfigurator />
+    <!-- <FloatingConfigurator /> -->
     <div class="bg-surface-50 dark:bg-surface-950 flex items-center justify-center min-h-screen min-w-[100vw] overflow-hidden">
         <!-- 기존 템플릿 내용 유지 -->
         <div class="flex flex-col items-center justify-center">
@@ -46,7 +45,7 @@ const handleLogin = async () => {
                     <!-- 로고 및 헤더 섹션 -->
                     <div class="text-center mb-8">
                         <!-- SVG 로고 유지 -->
-                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome to PrimeLand!</div>
+                        <div class="text-surface-900 dark:text-surface-0 text-3xl font-medium mb-4">Welcome to SyncDay!</div>
                         <span class="text-muted-color font-medium">Sign in to continue</span>
                     </div>
 
@@ -65,7 +64,7 @@ const handleLogin = async () => {
                             </div>
                             <span class="font-medium no-underline ml-2 text-right cursor-pointer text-primary">Forgot password?</span>
                         </div>
-                        <Button label="Sign In" class="w-full" @click="handleLogin"></Button>
+                        <Button label="Login" class="w-full" @click="handleLogin"></Button>
                     </div>
                 </div>
             </div>

@@ -2,14 +2,22 @@
 import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useAuthStore } from '@/stores/auth';
-import { inject } from 'vue';
-import { RouterLink, useRoute, useRouter } from 'vue-router';
+import AuthDialog from '@/views/auth/AuthDialog.vue';
+import { inject, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
 const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const user = inject('user');
+
+const showAuthDialog = ref(false);
+// 다이얼로그 열기
+const openAuthDialog = () => {
+    showAuthDialog.value = true;
+};
 </script>
 
 <template>
@@ -45,9 +53,7 @@ const user = inject('user');
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <RouterLink to="/login">
-                        <span>Login</span>
-                    </RouterLink>
+                    <Button label="Login" @click="openAuthDialog" severity="contrast" variant="text"></Button>
                 </template>
             </div>
             <button
@@ -58,7 +64,7 @@ const user = inject('user');
                 <i class="pi pi-ellipsis-v"></i>
             </button>
 
-            <div class="layout-topbar-menu hidden lg:block">
+            <div class="layout-topbar-menu hidden lg:block" v-if="user">
                 <div class="layout-topbar-menu-content">
                     <button type="button" class="layout-topbar-action">
                         <i class="pi pi-calendar"></i>
@@ -76,4 +82,6 @@ const user = inject('user');
             </div>
         </div>
     </div>
+
+    <AuthDialog v-model:visible="showAuthDialog"></AuthDialog>
 </template>
