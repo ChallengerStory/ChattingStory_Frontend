@@ -1,16 +1,20 @@
 <script setup>
+import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
 import AppConfigurator from './AppConfigurator.vue';
-import Logo from '@/components/logo/Logo.vue';
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
 
 <template>
     <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
-            <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
+            <!-- <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
-            </button>
+            </button> -->
+            <div class="w-12 h-12 flex items-center justify-center">
+                <Logo class="w-auto h-auto object-contain" />
+            </div>
+            <span class="layout-topbar-logo">SYNCDAY</span>
         </div>
 
         <div class="layout-topbar-actions">

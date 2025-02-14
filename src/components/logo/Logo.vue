@@ -4,7 +4,7 @@ const { isDarkTheme } = useLayout();
 </script>
 
 <template>
-    <svg width="58" height="63" viewBox="0 0 58 63" :class="{ 'fill-white': isDarkTheme, 'fill-black': !isDarkTheme }">
+    <svg viewBox="0 0 58 63" preserveAspectRatio="xMidYMid meet" :class="[{ 'fill-white': isDarkTheme, 'fill-black': !isDarkTheme }, 'w-auto h-full']">
         <g clip-path="url(#clip0_13_621)">
             <path
                 fill-rule="evenodd"
