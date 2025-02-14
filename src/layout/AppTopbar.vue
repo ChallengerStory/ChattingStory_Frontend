@@ -3,7 +3,6 @@ import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { inject } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
-import AppConfigurator from './AppConfigurator.vue';
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
 const router = useRouter();
@@ -28,7 +27,7 @@ const user = inject('user');
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
-                <div class="relative">
+                <!-- <div class="relative">
                     <button
                         v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
                         type="button"
@@ -37,11 +36,11 @@ const user = inject('user');
                         <i class="pi pi-palette"></i>
                     </button>
                     <AppConfigurator />
-                </div>
+                </div> -->
             </div>
             <div class="flex items-center">
                 <template v-if="user">
-                    {{ user.user_id }}
+                    {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
                     <RouterLink to="/login">
