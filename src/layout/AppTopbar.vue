@@ -6,12 +6,12 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 </script>
 
 <template>
-    <div class="layout-topbar">
+    <div class="layout-topbar underline-gray">
         <div class="layout-topbar-logo-container">
             <!-- <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button> -->
-            <div class="w-12 h-12 flex items-center justify-center">
+            <div class="w-10 h-10 flex items-center justify-center">
                 <Logo class="w-auto h-auto object-contain" />
             </div>
             <span class="layout-topbar-logo">SYNCDAY</span>
