@@ -1,8 +1,11 @@
 <script setup>
 import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
+import { inject } from 'vue';
 import AppConfigurator from './AppConfigurator.vue';
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+
+const user = inject('user');
 </script>
 
 <template>
@@ -33,8 +36,13 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                     <AppConfigurator />
                 </div>
             </div>
-
-            <button
+            <div v-if="user">
+                {{ user.user_id }}
+            </div>
+            <div v-else class="flex items-center">
+                <span> Login/Join </span>
+            </div>
+            <!-- <button
                 class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
             >
@@ -56,7 +64,7 @@ const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
                         <span>Profile</span>
                     </button>
                 </div>
-            </div>
+            </div> -->
         </div>
     </div>
 </template>

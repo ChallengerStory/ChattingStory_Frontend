@@ -37,6 +37,12 @@
         &:focus-visible {
             @include focused();
         }
+
+
+
+        span {
+            text-align: center;
+        }
     }
 
     .layout-topbar-action {
