@@ -2,9 +2,12 @@
 import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { inject } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import AppConfigurator from './AppConfigurator.vue';
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
+const router = useRouter();
+const route = useRoute();
 const user = inject('user');
 </script>
 
@@ -36,11 +39,15 @@ const user = inject('user');
                     <AppConfigurator />
                 </div>
             </div>
-            <div v-if="user">
-                {{ user.user_id }}
-            </div>
-            <div v-else class="flex items-center">
-                <span> Login/Join </span>
+            <div class="flex items-center">
+                <template v-if="user">
+                    {{ user.user_id }}
+                </template>
+                <template v-else class="flex items-center">
+                    <RouterLink to="/login">
+                        <span>Login</span>
+                    </RouterLink>
+                </template>
             </div>
             <!-- <button
                 class="layout-topbar-menu-button layout-topbar-action"
