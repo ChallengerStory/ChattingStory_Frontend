@@ -43,7 +43,7 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/user/refresh', {
+                const response = await axios.get('/users/refresh', {
                     withCredentials: true
                 });
 

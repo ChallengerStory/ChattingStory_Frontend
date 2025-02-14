@@ -1,10 +1,12 @@
 <script setup>
 import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
+import { useAuthStore } from '@/stores/auth';
 import { inject } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
 
+const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const user = inject('user');
@@ -48,9 +50,10 @@ const user = inject('user');
                     </RouterLink>
                 </template>
             </div>
-            <!-- <button
+            <button
                 class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
+                v-if="user"
             >
                 <i class="pi pi-ellipsis-v"></i>
             </button>
@@ -62,15 +65,15 @@ const user = inject('user');
                         <span>Calendar</span>
                     </button>
                     <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-inbox"></i>
-                        <span>Messages</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
-                        <span>Profile</span>
+                        <span>My Page</span>
+                    </button>
+                    <button type="button" class="layout-topbar-action" @click="authStore.logout()">
+                        <i class="pi pi-sign-out"></i>
+                        <span>Logout</span>
                     </button>
                 </div>
-            </div> -->
+            </div>
         </div>
     </div>
 </template>
