@@ -21,3 +21,43 @@ a {
 .layout-wrapper {
     min-height: 100vh;
 }
+
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+    width: 0.75rem;
+    height: 0.75rem;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--surface-ground);
+    border-radius: var(--border-radius);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--surface-border);
+    border-radius: var(--border-radius);
+    transition: background-color 0.2s;
+
+    &:hover {
+        background: var(--surface-400);
+    }
+}
+
+/* Firefox Scrollbar Styles */
+* {
+    scrollbar-width: thin;
+    scrollbar-color: var(--surface-border) var(--surface-ground);
+}
+
+/* For dark theme support */
+.dark ::-webkit-scrollbar-track {
+    background: var(--surface-ground);
+}
+
+.dark ::-webkit-scrollbar-thumb {
+    background: var(--surface-border);
+
+    &:hover {
+        background: var(--surface-400);
+    }
+}
