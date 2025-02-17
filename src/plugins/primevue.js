@@ -6,7 +6,7 @@ import ToastService from 'primevue/toastservice';
 
 const SyncDayPreset = definePreset(Aura, {
     semantic: {
-        primary: {
+        pink: {
             50: '#fff1f4',
             100: '#ffe4ea',
             200: '#ffc8d6',
@@ -19,7 +19,7 @@ const SyncDayPreset = definePreset(Aura, {
             900: '#802b42',
             950: '#4c1525'
         },
-        secondary: {
+        apricot: {
             50: '#fff9f2', // Lightest shade
             100: '#fff1e4',
             200: '#ffe4cc',
@@ -31,6 +31,19 @@ const SyncDayPreset = definePreset(Aura, {
             800: '#9c714d',
             900: '#805d40',
             950: '#4c3725' // Darkest shade
+        },
+        primary: {
+            50: '{gray.50}',
+            100: '{gray.100}',
+            200: '{gray.200}',
+            300: '{gray.300}',
+            400: '{gray.400}',
+            500: '{gray.500}',
+            600: '{gray.600}',
+            700: '{gray.700}',
+            800: '{gray.800}',
+            900: '{gray.900}',
+            950: '{gray.950}'
         }
     }
 });

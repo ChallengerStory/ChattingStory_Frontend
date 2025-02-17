@@ -5,16 +5,19 @@
     --outline-gray: #D9D9D9
 }
 
-body {
-    /* background-color: transparent; */
-}
+
 
 .gradient-vertical {
-    background: linear-gradient(180deg, var(--pink-color) 50%, var(--apricot-color));
+    background: linear-gradient(0, var(--pink-color) 50%, var(--apricot-color));
 }
 
 .gradient-horizontal {
     background: linear-gradient(90deg, var(--pink-color) 50%, var(--apricot-color));
+}
+
+.clip-text {
+    background-clip: text;
+    color: transparent;
 }
 
 .underline-gray {

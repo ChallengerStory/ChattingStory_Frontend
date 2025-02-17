@@ -7,8 +7,8 @@ const { isDarkTheme } = useLayout();
     <svg viewBox="0 0 58 63" preserveAspectRatio="xMidYMid meet" class="w-full h-full">
         <defs>
             <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="--p-primary-500" />
-                <stop offset="100%" stop-color="--p-secondary-500" />
+                <stop offset="0%" stop-color="--pink-color" />
+                <stop offset="100%" stop-color="--apricot-color" />
             </linearGradient>
             <clipPath id="clip0_13_621">
                 <rect width="58" height="63" />
