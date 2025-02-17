@@ -53,7 +53,7 @@ const openAuthDialog = () => {
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <Button label="Login" @click="openAuthDialog" severity="contrast" variant="text"></Button>
+                    <span @click="openAuthDialog">Login</span>
                 </template>
             </div>
             <button
