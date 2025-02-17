@@ -1,5 +1,5 @@
 <template>
-    <Dialog v-model:visible="dialogVisible" class="w-4/5" modal>
+    <Dialog v-model:visible="dialogVisible" class="w-4/5" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
             <form autocomplete="off" @submit.prevent="onSignInClicked(closeCallback)">
                 <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl">
