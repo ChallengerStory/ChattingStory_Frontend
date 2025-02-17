@@ -53,7 +53,7 @@ const openAuthDialog = () => {
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <span @click="openAuthDialog">Login</span>
+                    <Button label="Login" icon="pi pi-sign-in" @click="openAuthDialog" variant="text" severity="contrast"></Button>
                 </template>
             </div>
             <button
@@ -85,3 +85,8 @@ const openAuthDialog = () => {
 
     <AuthDialog v-model:visible="showAuthDialog"></AuthDialog>
 </template>
+<style scoped>
+.p-button-contrast:focus-visible {
+    outline-color: transparent;
+}
+</style>
