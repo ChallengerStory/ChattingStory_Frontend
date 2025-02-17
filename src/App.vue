@@ -1,5 +1,7 @@
 <template>
-    <router-view />
+    <ScrollPanel style="width: 100%; height: 100%">
+        <router-view />
+    </ScrollPanel>
 </template>
 
 <script setup>
