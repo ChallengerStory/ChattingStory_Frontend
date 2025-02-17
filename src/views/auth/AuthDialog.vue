@@ -46,7 +46,9 @@
 </template>
 
 <script setup>
+import { useAuthStore } from '@/stores/auth';
 import { computed, ref } from 'vue';
+
 const emit = defineEmits(['update:visible']);
 const props = defineProps({
     visible: {
@@ -60,10 +62,18 @@ const dialogVisible = computed({
     set: (value) => emit('update:visible', value)
 });
 
+const authStore = useAuthStore();
+
 const username = ref('');
 const password = ref('');
-const onSignInClicked = (closeCallback) => {
-    closeCallback();
+const onSignInClicked = async (closeCallback) => {
+    const response = await authStore.login(username.value, password.value);
+
+    if (response) {
+        closeCallback();
+    } else {
+        console.log('failed to log in');
+    }
 };
 </script>
 
