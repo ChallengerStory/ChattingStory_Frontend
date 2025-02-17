@@ -1,10 +1,10 @@
 <template>
     <Dialog v-model:visible="dialogVisible" class="w-4/5" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
-            <div class="relative overflow-hidden" style="height: 500px">
+            <div class="relative overflow-hidden" style="height: 55vh">
                 <!-- Login Form -->
-                <form autocomplete="off" @submit.prevent="onSignInClicked(closeCallback)" :class="['absolute w-full transition-transform duration-500 ease-in-out', isRegistering ? '-translate-x-full' : 'translate-x-0']">
-                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl">
+                <form autocomplete="off" @submit.prevent="onSignInClicked(closeCallback)" :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto', isRegistering ? '-translate-x-full' : 'translate-x-0']">
+                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
                         <div class="flex items-center justify-around">
                             <img src="@/assets/img/Logo_Gradient_Text.svg" class="w-3/5" alt="" />
                         </div>
@@ -46,8 +46,12 @@
                 </form>
 
                 <!-- Register Form -->
-                <form autocomplete="off" @submit.prevent="onRegisterSubmit(closeCallback)" :class="['absolute w-full transition-transform duration-500 ease-in-out', isRegistering ? 'translate-x-0' : 'translate-x-full']">
-                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl">
+                <form
+                    autocomplete="off"
+                    @submit.prevent="onRegisterSubmit(closeCallback)"
+                    :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? 'translate-x-0' : 'translate-x-full']"
+                >
+                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
                         <div class="flex items-center justify-around">
                             <img src="@/assets/img/Logo_Gradient_Text.svg" class="w-3/5" alt="" />
                         </div>
@@ -67,6 +71,25 @@
                             <IftaLabel class="w-full !bg-white/0">
                                 <InputText id="confirm-password" class="!bg-white/0 w-full" type="password" v-model="confirmPassword" autocomplete="new-password"> </InputText>
                                 <label for="confirm-password">Confirm Password</label>
+                            </IftaLabel>
+                        </div>
+                        <!-- 추가 회원가입 필드들 -->
+                        <div class="inline-flex flex-col gap-2">
+                            <IftaLabel class="w-full !bg-white/0">
+                                <InputText id="name" class="!bg-white/0 w-full" v-model="name" autocomplete="new-password"> </InputText>
+                                <label for="name">Name</label>
+                            </IftaLabel>
+                        </div>
+                        <div class="inline-flex flex-col gap-2">
+                            <IftaLabel class="w-full !bg-white/0">
+                                <InputText id="phone" class="!bg-white/0 w-full" v-model="phone" autocomplete="new-password"> </InputText>
+                                <label for="phone">Phone Number</label>
+                            </IftaLabel>
+                        </div>
+                        <div class="inline-flex flex-col gap-2">
+                            <IftaLabel class="w-full !bg-white/0">
+                                <InputText id="address" class="!bg-white/0 w-full" v-model="address" autocomplete="new-password"> </InputText>
+                                <label for="address">Address</label>
                             </IftaLabel>
                         </div>
                         <div class="flex items-center gap-4">
@@ -111,6 +134,9 @@ const password = ref('');
 const registerEmail = ref('');
 const registerPassword = ref('');
 const confirmPassword = ref('');
+const name = ref('');
+const phone = ref('');
+const address = ref('');
 
 // Toggle state
 const isRegistering = ref(false);
@@ -130,7 +156,14 @@ const onRegisterSubmit = async (closeCallback) => {
         return;
     }
 
-    const response = await authStore.register(registerEmail.value, registerPassword.value);
+    const response = await authStore.register({
+        email: registerEmail.value,
+        password: registerPassword.value,
+        name: name.value,
+        phone: phone.value,
+        address: address.value
+    });
+
     if (response) {
         closeCallback();
     } else {
@@ -151,5 +184,24 @@ input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
     transition: background-color 5000s ease-in-out 0s;
+}
+
+/* 스크롤바 스타일링 */
+.scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 3px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    background: #555;
 }
 </style>
