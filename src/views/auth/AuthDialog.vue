@@ -1,17 +1,21 @@
 <template>
     <Dialog v-model:visible="dialogVisible" modal>
         <template #container="{ closeCallback }">
-            <div class="flex flex-col px-8 py-8 gap-2 rounded-2xl">
+            <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl">
                 <div class="flex items-center justify-around">
                     <img src="@/assets/img/Logo_Gradient_Text.svg" class="h-20" alt="" />
                 </div>
                 <div class="inline-flex flex-col gap-2">
-                    <label for="username" class="text-primary-500 font-semibold">Email</label>
-                    <InputText id="username" class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-80"></InputText>
+                    <IftaLabel class="w-full !text-secondary-500 !bg-transparent">
+                        <InputText id="username" class="w-full"></InputText>
+                        <label for="username" class="!text-gray-500">Email</label>
+                    </IftaLabel>
                 </div>
                 <div class="inline-flex flex-col gap-2">
-                    <label for="password" class="text-primary-500 font-semibold">Password</label>
-                    <InputText id="password" class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-80" type="password"></InputText>
+                    <IftaLabel class="w-full !text-secondary-500">
+                        <InputText id="password" class="w-full" type="password"></InputText>
+                        <label for="password" class="!text-gray-500">Password</label>
+                    </IftaLabel>
                 </div>
                 <div class="flex items-center gap-4">
                     <Button class="w-full" label="Sign In" @click="onSignInClicked(closeCallback)"></Button>
