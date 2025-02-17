@@ -4,7 +4,16 @@ const { isDarkTheme } = useLayout();
 </script>
 
 <template>
-    <svg viewBox="0 0 58 63" preserveAspectRatio="xMidYMid meet" :class="[{ 'fill-white': isDarkTheme, 'fill-black': !isDarkTheme }, 'w-full h-full']">
+    <svg viewBox="0 0 58 63" preserveAspectRatio="xMidYMid meet" class="w-full h-full">
+        <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stop-color="--p-primary-500" />
+                <stop offset="100%" stop-color="--p-secondary-500" />
+            </linearGradient>
+            <clipPath id="clip0_13_621">
+                <rect width="58" height="63" />
+            </clipPath>
+        </defs>
         <g clip-path="url(#clip0_13_621)">
             <path
                 fill-rule="evenodd"
@@ -23,10 +32,5 @@ const { isDarkTheme } = useLayout();
             />
             <path d="M21.5329 63V3.33786e-07H26.9162L30.2156 0.430905V62.65L27.2635 63H21.5329Z" />
         </g>
-        <defs>
-            <clipPath id="clip0_13_621">
-                <rect width="58" height="63" />
-            </clipPath>
-        </defs>
     </svg>
 </template>
