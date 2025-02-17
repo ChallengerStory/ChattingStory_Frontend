@@ -19,7 +19,7 @@
                         </IftaLabel>
                     </div>
                     <div class="flex items-center gap-4">
-                        <Button type="submit" class="w-full" severity="secondary" label="Sign In"> </Button>
+                        <Button type="submit" class="w-full" severity="secondary" label="Login"> </Button>
                     </div>
 
                     <div class="flex gap-4 items-center">

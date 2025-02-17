@@ -25,11 +25,10 @@ export const useAuthStore = defineStore('auth', {
                 if (!accessToken) {
                     throw new Error('No access token received');
                 }
-                console.log(accessToken);
                 this.setAccessToken(accessToken);
                 this.isInitialized = true;
 
-                console.log(response.data);
+                // console.log(response.data);
                 this.user = { ...response.data };
                 return true;
             } catch (error) {
