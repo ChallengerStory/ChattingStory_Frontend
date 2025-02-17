@@ -14,7 +14,7 @@
                     <InputText id="password" class="!bg-white/20 !border-0 !p-4 !text-primary-50 w-80" type="password"></InputText>
                 </div>
                 <div class="flex items-center gap-4">
-                    <Button class="w-full" label="Sign In" @click="closeCallback"></Button>
+                    <Button class="w-full" label="Sign In" @click="onSignInClicked(closeCallback)"></Button>
                 </div>
 
                 <div class="flex gap-4 items-center">
@@ -45,6 +45,10 @@ const dialogVisible = computed({
     get: () => props.visible,
     set: (value) => emit('update:visible', value)
 });
+
+const onSignInClicked = (closeCallback) => {
+    closeCallback();
+};
 </script>
 
 <style scoped></style>
