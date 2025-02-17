@@ -1,7 +1,6 @@
 <template>
     <Dialog v-model:visible="dialogVisible" class="w-4/5" modal>
         <template #container="{ closeCallback }">
-            <!-- autocomplete="off"를 form 레벨에서 적용 -->
             <form autocomplete="off" @submit.prevent="onSignInClicked(closeCallback)">
                 <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl">
                     <div class="flex items-center justify-around">
@@ -9,7 +8,6 @@
                     </div>
                     <div class="inline-flex flex-col gap-2">
                         <IftaLabel class="w-full !bg-white/0">
-                            <!-- autocomplete="new-password"로 설정하여 자동완성 방지 -->
                             <InputText id="username" class="!bg-white/0 w-full" v-model="username" autocomplete="new-password" name="username"> </InputText>
                             <label for="username" class="">Email</label>
                         </IftaLabel>
@@ -26,7 +24,7 @@
 
                     <div class="flex gap-4 items-center">
                         <hr class="flex-1" />
-                        <span class="--p-text-muted-color">or continue with</span>
+                        <span class="text-gray-400">or continue with</span>
                         <hr class="flex-1" />
                     </div>
                     <div class="flex flex-row gap-4 items-center justify-center">
