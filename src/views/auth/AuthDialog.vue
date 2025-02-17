@@ -1,9 +1,13 @@
 <template>
-    <Dialog v-model:visible="dialogVisible" class="w-4/5" :dismissableMask="true" modal>
+    <Dialog v-model:visible="dialogVisible" class="w-4/5 max-w-lg" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
-            <div class="relative overflow-hidden" style="height: 55vh">
+            <div class="relative overflow-hidden" style="height: 54vh">
                 <!-- Login Form -->
-                <form autocomplete="off" @submit.prevent="onSignInClicked(closeCallback)" :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto', isRegistering ? '-translate-x-full' : 'translate-x-0']">
+                <form
+                    autocomplete="off"
+                    @submit.prevent="onSignInClicked(closeCallback)"
+                    :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? '-translate-x-full' : 'translate-x-0']"
+                >
                     <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
                         <div class="flex items-center justify-around">
                             <img src="@/assets/img/Logo_Gradient_Text.svg" class="w-3/5" alt="" />
