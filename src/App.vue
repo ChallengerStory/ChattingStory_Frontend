@@ -1,7 +1,9 @@
 <template>
-    <ScrollPanel style="width: 100%; height: 100%">
-        <router-view />
-    </ScrollPanel>
+    <div class="app-root">
+        <ScrollPanel class="w-full h-full">
+            <router-view />
+        </ScrollPanel>
+    </div>
 </template>
 
 <script setup>
@@ -17,4 +19,12 @@ const user = computed(() => authStore.user);
 provide('user', user);
 </script>
 
-<style scoped></style>
+<style scoped>
+.app-root {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; /* 명시적 높이 설정 */
+    width: 100vw;
+    overflow: hidden; /* 중요: 이중 스크롤 방지 */
+}
+</style>
