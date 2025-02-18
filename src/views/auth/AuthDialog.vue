@@ -1,5 +1,5 @@
 <template>
-    <Dialog v-model:visible="dialogVisible" class="w-4/5 max-w-lg" :dismissableMask="true" modal>
+    <Dialog v-model:visible="dialogVisible" class="w-4/5 max-w-lg px-2 py-2" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
             <div class="relative overflow-hidden" style="height: 54vh">
                 <!-- Login Form -->
