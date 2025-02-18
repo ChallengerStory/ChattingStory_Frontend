@@ -1,21 +1,11 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { computed, ref, watch } from 'vue';
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue';
 import AppFooter from './AppFooter.vue';
 import AppSidebar from './AppSidebar.vue';
 import AppTopbar from './AppTopbar.vue';
 
-const { layoutConfig, layoutState, isSidebarActive } = useLayout();
-
-const outsideClickListener = ref(null);
-
-watch(isSidebarActive, (newVal) => {
-    if (newVal) {
-        bindOutsideClickListener();
-    } else {
-        unbindOutsideClickListener();
-    }
-});
+const { layoutConfig, layoutState } = useLayout();
 
 const containerClass = computed(() => {
     return {
@@ -27,45 +17,81 @@ const containerClass = computed(() => {
     };
 });
 
-function bindOutsideClickListener() {
+const toggleMenu = () => {
+    layoutState.staticMenuMobileActive = !layoutState.staticMenuMobileActive;
+
+    if (layoutState.staticMenuMobileActive) {
+        bindOutsideClickListener();
+        document.body.classList.add('blocked-scroll');
+    } else {
+        unbindOutsideClickListener();
+        document.body.classList.remove('blocked-scroll');
+    }
+};
+
+// Handle outside click to close sidebar
+const outsideClickListener = ref(null);
+
+const bindOutsideClickListener = () => {
     if (!outsideClickListener.value) {
         outsideClickListener.value = (event) => {
-            if (isOutsideClicked(event)) {
-                layoutState.overlayMenuActive = false;
+            if (isOutsideClicked(event) && layoutState.staticMenuMobileActive) {
                 layoutState.staticMenuMobileActive = false;
-                layoutState.menuHoverActive = false;
+                document.body.classList.remove('blocked-scroll');
             }
         };
         document.addEventListener('click', outsideClickListener.value);
     }
-}
+};
 
-function unbindOutsideClickListener() {
+const unbindOutsideClickListener = () => {
     if (outsideClickListener.value) {
-        document.removeEventListener('click', outsideClickListener);
+        document.removeEventListener('click', outsideClickListener.value);
         outsideClickListener.value = null;
     }
-}
+};
 
-function isOutsideClicked(event) {
+const isOutsideClicked = (event) => {
     const sidebarEl = document.querySelector('.layout-sidebar');
-    const topbarEl = document.querySelector('.layout-menu-button');
+    const menuButton = document.querySelector('.drawer-button');
 
-    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || topbarEl.isSameNode(event.target) || topbarEl.contains(event.target));
-}
+    return !(sidebarEl.isSameNode(event.target) || sidebarEl.contains(event.target) || menuButton.isSameNode(event.target) || menuButton.contains(event.target));
+};
+
+onMounted(() => {
+    if (layoutState.staticMenuMobileActive) {
+        bindOutsideClickListener();
+    }
+});
+
+onBeforeUnmount(() => {
+    unbindOutsideClickListener();
+});
 </script>
 
 <template>
     <div class="layout-wrapper" :class="containerClass">
-        <app-topbar></app-topbar>
-        <app-sidebar></app-sidebar>
+        <!-- Sidebar - 기본적으로 화면 밖에 위치, toggle 시 표시됨 -->
+        <div class="layout-sidebar">
+            <app-sidebar></app-sidebar>
+        </div>
+
+        <!-- Main Container - 전체 화면 차지 -->
         <div class="layout-main-container">
+            <app-topbar></app-topbar>
+
             <div class="layout-main">
                 <router-view></router-view>
             </div>
+
             <app-footer></app-footer>
         </div>
-        <div class="layout-mask animate-fadein"></div>
+
+        <!-- drawer 버튼 - 모든 화면 크기에서 좌하단에 표시 -->
+        <Button icon="pi pi-bars" class="drawer-button p-link" @click="toggleMenu" severity="contrast"> </Button>
+
+        <!-- 사이드바 활성화시 배경 마스크 -->
+        <div class="layout-mask" @click="toggleMenu"></div>
     </div>
     <Toast />
 </template>

@@ -8,104 +8,83 @@
     }
 }
 
-@media (min-width: 992px) {
-    .layout-wrapper {
-        &.layout-overlay {
-            .layout-main-container {
-                margin-left: 0;
-                padding-left: 2rem;
-            }
+/* 모든 화면 크기에 공통으로 적용되는 스타일 */
+.layout-wrapper {
+    .layout-sidebar {
+        position: fixed;
+        top: 0;
+        left: -250px;
+        width: 250px;
+        height: 100vh;
+        z-index: 999;
+        transition: transform 0.2s, left 0.2s;
+        background-color: var(--surface-overlay);
+        border-right: 1px solid var(--surface-border);
+        box-shadow: 0px 3px 5px rgba(0, 0, 0, 0.02), 0px 0px 2px rgba(0, 0, 0, 0.05), 0px 1px 4px rgba(0, 0, 0, 0.08);
+    }
 
-            .layout-sidebar {
-                transform: translateX(-100%);
-                left: 0;
-                top: 0;
-                height: 100vh;
-                border-top-left-radius: 0;
-                border-bottom-left-radius: 0;
-                border-right: 1px solid var(--surface-border);
-                transition:
-                    transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
-                    left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-                box-shadow:
-                    0px 3px 5px rgba(0, 0, 0, 0.02),
-                    0px 0px 2px rgba(0, 0, 0, 0.05),
-                    0px 1px 4px rgba(0, 0, 0, 0.08);
-            }
+    .layout-main-container {
+        width: 100%;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+    }
 
-            &.layout-overlay-active {
-                .layout-sidebar {
-                    transform: translateX(0);
-                }
-            }
-        }
+    .layout-main {
+        flex: 1 1 auto;
+        padding: 1rem;
+    }
 
-        &.layout-static {
-            .layout-main-container {
-                margin-left: 22rem;
-            }
+    .drawer-button {
+        display: block;
+        position: fixed;
+        left: 1rem;
+        bottom: 1rem;
+        z-index: 997;
+        width: 3rem;
+        height: 3rem;
+        border-radius: 50%;
+        // background-color: var(--primary-color);
+        // box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        // color: var(--primary-color-text);
+    }
 
-            &.layout-static-inactive {
-                .layout-sidebar {
-                    transform: translateX(-100%);
-                    left: 0;
-                }
-
-                .layout-main-container {
-                    margin-left: 0;
-                    padding-left: 2rem;
-                }
-            }
-        }
-
-        .layout-mask {
-            display: none;
-        }
+    .layout-mask {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        z-index: 998;
+        width: 100%;
+        height: 100%;
+        background-color: var(--maskbg);
     }
 }
 
-@media (max-width: 991px) {
-    .blocked-scroll {
-        overflow: hidden;
+/* 모바일 active 상태 스타일 */
+.layout-mobile-active {
+    .layout-sidebar {
+        left: 0;
     }
 
+    .layout-mask {
+        display: block;
+    }
+}
+
+/* 스크롤 막기 */
+.blocked-scroll {
+    overflow: hidden;
+}
+
+/* 태블릿/데스크톱 추가 스타일 */
+@media (min-width: 992px) {
     .layout-wrapper {
-        .layout-main-container {
-            margin-left: 0;
-            padding-left: 2rem;
-        }
-
-        .layout-sidebar {
-            transform: translateX(-100%);
-            left: 0;
-            top: 0;
-            height: 100vh;
-            border-top-left-radius: 0;
-            border-bottom-left-radius: 0;
-            transition:
-                transform 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99),
-                left 0.4s cubic-bezier(0.05, 0.74, 0.2, 0.99);
-        }
-
-        .layout-mask {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: 998;
-            width: 100%;
-            height: 100%;
-            background-color: var(--maskbg);
-        }
-
-        &.layout-mobile-active {
-            .layout-sidebar {
-                transform: translateX(0);
-            }
-
-            .layout-mask {
-                display: block;
-            }
+        .layout-main {
+            padding: 2rem;
         }
     }
 }
