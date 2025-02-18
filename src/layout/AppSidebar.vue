@@ -4,7 +4,9 @@ import AppMenu from './AppMenu.vue';
 
 <template>
     <div class="layout-sidebar">
-        <app-menu></app-menu>
+        <ScrollPanel>
+            <app-menu></app-menu>
+        </ScrollPanel>
     </div>
 </template>
 
