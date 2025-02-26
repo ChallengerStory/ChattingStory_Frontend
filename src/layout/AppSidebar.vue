@@ -1,10 +1,8 @@
-<script setup>
-import AppMenu from './AppMenu.vue';
-</script>
+<script setup></script>
 
 <template>
     <div class="layout-sidebar">
-        <app-menu></app-menu>
+        <SideBar></SideBar>
     </div>
 </template>
 
