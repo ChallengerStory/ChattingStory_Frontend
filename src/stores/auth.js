@@ -19,7 +19,7 @@ export const useAuthStore = defineStore('auth', {
 
         async login(email, password) {
             try {
-                const response = await axios.post('/users/login', { email, password }, { withCredentials: true });
+                const response = await axios.post('/auth/login', { email, password }, { withCredentials: true });
 
                 const accessToken = response.headers.authorization?.replace('Bearer ', '');
                 if (!accessToken) {
@@ -42,7 +42,7 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/users/refresh', {
+                const response = await axios.get('/auth/refresh', {
                     withCredentials: true
                 });
 
@@ -64,7 +64,7 @@ export const useAuthStore = defineStore('auth', {
 
         async logout() {
             try {
-                await axios.post('/users/logout', {}, { withCredentials: true });
+                await axios.post('/auth/logout', {}, { withCredentials: true });
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
