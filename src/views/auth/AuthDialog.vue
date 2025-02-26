@@ -9,12 +9,9 @@
                     :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? '-translate-x-full' : 'translate-x-0']"
                 >
                     <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
-                        <div class="flex items-center justify-around">
-                            <img src="@/assets/img/Logo_Gradient_Text.svg" class="w-3/5" alt="" />
-                        </div>
                         <div class="inline-flex flex-col gap-2">
                             <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="username" class="!bg-white/0 w-full" v-model="username" autocomplete="new-password" name="username"> </InputText>
+                                <InputText id="username" class="!bg-white/0 w-full" v-model="username" autocomplete="new-password" name="username" type="email"> </InputText>
                                 <label for="username">Email</label>
                             </IftaLabel>
                         </div>
@@ -56,14 +53,16 @@
                     :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? 'translate-x-0' : 'translate-x-full']"
                 >
                     <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
-                        <div class="flex items-center justify-around">
-                            <img src="@/assets/img/Logo_Gradient_Text.svg" class="w-3/5" alt="" />
-                        </div>
                         <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="register-email" class="!bg-white/0 w-full" v-model="registerEmail" autocomplete="new-password"> </InputText>
-                                <label for="register-email">Email</label>
-                            </IftaLabel>
+                            <InputGroup>
+                                <IftaLabel class="w-full !bg-white/0">
+                                    <InputText id="register-email" class="!bg-white/0 w-full" v-model="registerEmail" autocomplete="new-password"> </InputText>
+                                    <label for="register-email">Email</label>
+                                </IftaLabel>
+                                <InputGroupAddon>
+                                    <Button icon="pi pi-check" severity="secondary" variant="text" @click="sendVerificationCode"></Button>
+                                </InputGroupAddon>
+                            </InputGroup>
                         </div>
                         <div class="inline-flex flex-col gap-2">
                             <IftaLabel class="w-full !bg-white/0">
@@ -78,24 +77,7 @@
                             </IftaLabel>
                         </div>
                         <!-- 추가 회원가입 필드들 -->
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="name" class="!bg-white/0 w-full" v-model="name" autocomplete="new-password"> </InputText>
-                                <label for="name">Name</label>
-                            </IftaLabel>
-                        </div>
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="phone" class="!bg-white/0 w-full" v-model="phone" autocomplete="new-password"> </InputText>
-                                <label for="phone">Phone Number</label>
-                            </IftaLabel>
-                        </div>
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="address" class="!bg-white/0 w-full" v-model="address" autocomplete="new-password"> </InputText>
-                                <label for="address">Address</label>
-                            </IftaLabel>
-                        </div>
+
                         <div class="flex items-center gap-4">
                             <Button type="submit" class="w-full" severity="secondary" label="Register"> </Button>
                         </div>
@@ -177,6 +159,15 @@ const onRegisterSubmit = async (closeCallback) => {
 
 const toggleForm = () => {
     isRegistering.value = !isRegistering.value;
+};
+
+const sendVerificationCode = async () => {
+    try {
+        const response = await authStore.checkEmail(username.value);
+        console.log(response.data);
+    } catch (error) {
+        console.log(error);
+    }
 };
 </script>
 

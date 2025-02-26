@@ -8,8 +8,8 @@ import { useAuthStore } from './stores/auth';
 const pinia = createPinia();
 
 /* styles */
+import '@/assets/chattingstory/main.css';
 import '@/assets/styles.scss';
-import '@/assets/syncday/main.css';
 import '@/assets/tailwind.css';
 
 const app = createApp(App);

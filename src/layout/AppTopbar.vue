@@ -26,10 +26,8 @@ const openAuthDialog = () => {
             <!-- <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button> -->
-            <div class="w-10 h-10 flex items-center justify-center">
-                <Logo class="w-auto h-auto object-contain" />
-            </div>
-            <span class="layout-topbar-logo">SYNCDAY</span>
+
+            <span class="layout-topbar-logo">Chatting Story</span>
         </div>
 
         <div class="layout-topbar-actions">

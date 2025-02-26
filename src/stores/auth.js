@@ -32,7 +32,6 @@ export const useAuthStore = defineStore('auth', {
                 this.user = { ...response.data };
                 return true;
             } catch (error) {
-                console.error('Login failed:', error);
                 this.handleAuthError();
                 return false;
             }
@@ -56,8 +55,7 @@ export const useAuthStore = defineStore('auth', {
                 }
                 return false;
             } catch (error) {
-                console.error('Auth initialization failed:', error);
-                this.handleAuthError();
+                this.handleAuthError(error);
                 return false;
             }
         },
@@ -68,10 +66,26 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
-                this.handleAuthError();
+                this.handleAuthError(error);
             }
         },
-        handleAuthError() {
+
+        async checkEmail(email) {
+            try {
+                const response = await axios.get(`/auth/check-email?email=${encodeURIComponent(email)}`);
+                return response;
+            } catch (error) {
+                this.handleAuthError(error);
+            }
+        },
+        async sendVerification(email) {
+            try {
+                const response = await axios.get(`/auth/send-verification?email=${encodeURIComponent(email)}}`);
+                return response;
+            } catch (error) {}
+        },
+        handleAuthError(e) {
+            console.log(e);
             this.accessToken = null;
             this.user = null;
             this.isInitialized = false;
