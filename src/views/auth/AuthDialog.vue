@@ -163,7 +163,7 @@ const toggleForm = () => {
 
 const sendVerificationCode = async () => {
     try {
-        const response = await authStore.checkEmail(username.value);
+        const response = await authStore.checkEmail(registerEmail.value);
         console.log(response.data);
     } catch (error) {
         console.log(error);
