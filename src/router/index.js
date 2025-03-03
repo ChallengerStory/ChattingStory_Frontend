@@ -11,7 +11,8 @@ const router = createRouter({
                 {
                     path: '/',
                     name: 'main',
-                    component: () => import('@/views/main/MainPage.vue')
+                    // component: () => import('@/views/main/MainPage.vue')
+                    component: () => import('@/views/chat/ChatRoom.vue')
                 },
                 ...authRoutes
             ]

@@ -9,6 +9,7 @@ import vueDevTools from 'vite-plugin-vue-devtools';
 // https://vitejs.dev/config/
 export default defineConfig({
     optimizeDeps: {
+        include: ['sockjs-client', '@stomp/stompjs'], // 여기에 sockjs-client 추가
         noDiscovery: true
     },
     plugins: [
@@ -20,7 +21,8 @@ export default defineConfig({
     ],
     resolve: {
         alias: {
-            '@': fileURLToPath(new URL('./src', import.meta.url))
+            '@': fileURLToPath(new URL('./src', import.meta.url)),
+            'sockjs-client': 'sockjs-client/dist/sockjs.min.js' // sockjs-client 별칭 추가
         }
     },
     server: {
@@ -29,9 +31,8 @@ export default defineConfig({
                 target: 'http://localhost:5000',
                 changeOrigin: true,
                 rewrite: (path) => path.replace('/^/api/', ''),
-                secure: false, // SSL 관련 검증 비활성화
+                secure: false,
                 configure: (proxy, options) => {
-                    // proxy 동작 로깅
                     proxy.on('proxyReq', (proxyReq, req, res) => {
                         console.log('Proxy Request:', req.method, req.url);
                     });
@@ -39,6 +40,12 @@ export default defineConfig({
                         console.log('Proxy Response:', proxyRes.statusCode);
                     });
                 }
+            },
+            // WebSocket 프록시 추가
+            '/ws': {
+                target: 'ws://localhost:5000', // 백엔드 서버 주소
+                ws: true, // WebSocket 프록시 활성화
+                changeOrigin: true
             }
         }
     }

@@ -80,8 +80,8 @@ onBeforeUnmount(() => {
         <div class="layout-main-container">
             <app-topbar></app-topbar>
 
-            <div class="layout-main">
-                <router-view></router-view>
+            <div class="layout-main flex flex-col">
+                <router-view class="flex-1"></router-view>
             </div>
 
             <app-footer></app-footer>
