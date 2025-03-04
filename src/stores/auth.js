@@ -1,5 +1,7 @@
-import axios from 'axios';
+// src/stores/auth.js
 import { defineStore } from 'pinia';
+import { authApi } from '../api/auth';
+import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
     state: () => ({
@@ -15,24 +17,28 @@ export const useAuthStore = defineStore('auth', {
     actions: {
         setAccessToken(token) {
             this.accessToken = token;
+            if (token) {
+                axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            } else {
+                delete axios.defaults.headers.common['Authorization'];
+            }
         },
 
         async login(email, password) {
             try {
-                const response = await axios.post('/auth/login', { email, password }, { withCredentials: true });
+                const { accessToken, user } = await authApi.login(email, password);
 
-                const accessToken = response.headers.authorization?.replace('Bearer ', '');
                 if (!accessToken) {
                     throw new Error('No access token received');
                 }
+
                 this.setAccessToken(accessToken);
+                this.user = user;
                 this.isInitialized = true;
 
-                // console.log(response.data);
-                this.user = { ...response.data };
                 return true;
             } catch (error) {
-                this.handleAuthError();
+                this.handleAuthError(error);
                 return false;
             }
         },
@@ -41,15 +47,11 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/auth/refresh', {
-                    withCredentials: true
-                });
+                const { accessToken, user } = await authApi.refreshToken();
 
-                const newAccessToken = response.headers.authorization?.replace('Bearer ', '');
-                if (newAccessToken) {
-                    this.setAccessToken(newAccessToken);
-                    console.log(newAccessToken);
-                    this.user = { ...response.data };
+                if (accessToken) {
+                    this.setAccessToken(accessToken);
+                    this.user = user;
                     this.isInitialized = true;
                     return true;
                 }
@@ -62,30 +64,36 @@ export const useAuthStore = defineStore('auth', {
 
         async logout() {
             try {
-                await axios.post('/auth/logout', {}, { withCredentials: true });
+                await authApi.logout();
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
-                this.handleAuthError(error);
+                this.handleAuthError();
             }
         },
 
         async checkEmail(email) {
             try {
-                const response = await axios.get(`/auth/check-email?email=${encodeURIComponent(email)}`);
-                return response;
+                return await authApi.checkEmail(email);
             } catch (error) {
                 this.handleAuthError(error);
+                throw error;
             }
         },
+
         async sendVerification(email) {
             try {
-                const response = await axios.get(`/auth/send-verification?email=${encodeURIComponent(email)}}`);
-                return response;
-            } catch (error) {}
+                return await authApi.sendVerification(email);
+            } catch (error) {
+                console.error('Send verification failed:', error);
+                throw error;
+            }
         },
-        handleAuthError(e) {
-            console.log(e);
+
+        handleAuthError(error) {
+            if (error) {
+                console.error('Auth error:', error);
+            }
             this.accessToken = null;
             this.user = null;
             this.isInitialized = false;
