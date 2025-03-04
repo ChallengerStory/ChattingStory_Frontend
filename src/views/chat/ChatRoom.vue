@@ -23,7 +23,6 @@
 
 <script setup>
 import * as StompJS from '@stomp/stompjs';
-// import SockJS from 'sockjs-client';
 import { onBeforeUnmount, ref } from 'vue';
 // 반응형 상태 정의
 const messages = ref([]);
