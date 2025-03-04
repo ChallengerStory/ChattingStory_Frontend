@@ -1,12 +1,10 @@
 <script setup>
-import Logo from '@/components/logo/Logo.vue';
 import { useLayout } from '@/layout/composables/layout';
 import { useAuthStore } from '@/stores/auth';
-import AuthDialog from '@/views/auth/AuthDialog.vue';
 import { inject, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-const { toggleMenu, toggleDarkMode, isDarkTheme } = useLayout();
+const { toggleDarkMode, isDarkTheme } = useLayout();
 
 const authStore = useAuthStore();
 const router = useRouter();
@@ -40,8 +38,7 @@ const openAuthDialog = () => {
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <Button icon="pi pi-google" text></Button>
-                    <!-- <Button label="Login" icon="pi pi-sign-in" @click="openAuthDialog" variant="text" severity="contrast"></Button> -->
+                    <Button icon="pi pi-google" text rounded></Button>
                 </template>
             </div>
             <button
@@ -55,10 +52,6 @@ const openAuthDialog = () => {
             <div class="layout-topbar-menu hidden lg:block" v-if="user">
                 <div class="layout-topbar-menu-content">
                     <button type="button" class="layout-topbar-action">
-                        <i class="pi pi-calendar"></i>
-                        <span>Calendar</span>
-                    </button>
-                    <button type="button" class="layout-topbar-action">
                         <i class="pi pi-user"></i>
                         <span>My Page</span>
                     </button>
@@ -70,11 +63,4 @@ const openAuthDialog = () => {
             </div>
         </div>
     </div>
-
-    <AuthDialog v-model:visible="showAuthDialog"></AuthDialog>
 </template>
-<style scoped>
-.p-button-contrast:focus-visible {
-    outline-color: transparent;
-}
-</style>
