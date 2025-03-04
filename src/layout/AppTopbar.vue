@@ -26,8 +26,10 @@ const openAuthDialog = () => {
             <!-- <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
                 <i class="pi pi-bars"></i>
             </button> -->
-
-            <span class="layout-topbar-logo">Chatting Story</span>
+            <div class="layout-topbar-logo">
+                <img src="@/assets/img/doing_face.png" alt="" />
+                <span class="maple-bold">Chatting Story</span>
+            </div>
         </div>
 
         <div class="layout-topbar-actions">

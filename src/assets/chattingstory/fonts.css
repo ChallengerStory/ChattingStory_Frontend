@@ -1,0 +1,21 @@
+@font-face {
+    font-family: 'Maplestory Bold';
+    src: url('../fonts/Maplestory Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Maplestory Light';
+    src: url('../fonts/Maplestory Light.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+.maple-bold {
+    font-family: 'Maplestory Bold', sans-serif;
+}
+
+.maple-light {
+    font-family: 'Maplestory Light', sans-serif;
+}
