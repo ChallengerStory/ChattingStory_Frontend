@@ -23,7 +23,7 @@
 
 <script setup>
 import * as StompJS from '@stomp/stompjs';
-import SockJS from 'sockjs-client';
+// import SockJS from 'sockjs-client';
 import { onBeforeUnmount, ref } from 'vue';
 // 반응형 상태 정의
 const messages = ref([]);
@@ -35,16 +35,9 @@ const isConnected = ref(false);
 const roomId = '67c581e1473928720b59294f';
 const userId = '1';
 
-// STOMP 클라이언트 생성
 const stompClient = new StompJS.Client({
-    // brokerURL 대신 webSocketFactory 사용
-    webSocketFactory: () => new SockJS('http://localhost:5000/ws'),
-    debug: function (str) {
-        console.log(str);
-    },
-    reconnectDelay: 5000
+    brokerURL: `ws://localhost:5000/ws`
 });
-
 // 연결 성공 콜백
 stompClient.onConnect = (frame) => {
     console.log('Connected: ' + frame);
