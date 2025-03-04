@@ -54,7 +54,6 @@ const openGoogleAuth = () => {
             state,
             additionalParams: {
                 response_type: 'code',
-                access_type: 'offline',
                 prompt: 'consent'
             }
         });
