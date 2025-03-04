@@ -1,6 +1,7 @@
 import AppLayout from '@/layout/AppLayout.vue';
 import { createRouter, createWebHistory } from 'vue-router';
 import authRoutes from './auth.js';
+import callbackRoutes from './callback.js';
 const router = createRouter({
     history: createWebHistory(),
     routes: [
@@ -14,7 +15,8 @@ const router = createRouter({
                     // component: () => import('@/views/main/MainPage.vue')
                     component: () => import('@/views/chat/ChatRoom.vue')
                 },
-                ...authRoutes
+                ...authRoutes,
+                ...callbackRoutes
             ]
         }
     ]
