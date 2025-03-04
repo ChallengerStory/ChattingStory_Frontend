@@ -1,6 +1,6 @@
 // src/stores/auth.js
 import { defineStore } from 'pinia';
-import { authApi } from '../api/auth';
+import { authApi } from '../api/auth/auth';
 import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
