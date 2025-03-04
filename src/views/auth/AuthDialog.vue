@@ -2,16 +2,19 @@
     <Dialog v-model:visible="dialogVisible" class="w-4/5 max-w-lg px-2 py-2" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
             <div class="relative overflow-hidden" style="height: 54vh">
-                <Button v-slot="slotProps" asChild>
-                    <button v-bind="slotProps.a11yAttrs">
-                        <i class="px-2 py-2 pi pi-google gradient-vertical clip-text"></i>
-                    </button>
-                </Button>
-                <Button v-slot="slotProps" asChild>
-                    <button v-bind="slotProps.a11yAttrs">
-                        <i class="px-2 py-2 pi pi-github gradient-vertical clip-text"></i>
-                    </button>
-                </Button>
+                <div class="w-full h-full flex flex-row justify-around items-center">
+                    <div class="">
+                        <Button icon="pi pi-google" size="large"></Button>
+                    </div>
+
+                    <!-- <div class="flex-1">
+                        <Button v-slot="slotProps" asChild>
+                            <button v-bind="slotProps.a11yAttrs">
+                                <i class="px-2 py-2 pi pi-github gradient-vertical clip-text"></i>
+                            </button>
+                        </Button>
+                    </div> -->
+                </div>
             </div>
         </template>
     </Dialog>
@@ -35,64 +38,6 @@ const dialogVisible = computed({
 });
 
 const authStore = useAuthStore();
-
-// Login form data
-const username = ref('');
-const password = ref('');
-
-// Register form data
-const registerEmail = ref('');
-const registerPassword = ref('');
-const confirmPassword = ref('');
-const name = ref('');
-const phone = ref('');
-const address = ref('');
-
-// Toggle state
-const isRegistering = ref(false);
-
-const onSignInClicked = async (closeCallback) => {
-    const response = await authStore.login(username.value, password.value);
-    if (response) {
-        closeCallback();
-    } else {
-        console.log('failed to log in');
-    }
-};
-
-const onRegisterSubmit = async (closeCallback) => {
-    if (registerPassword.value !== confirmPassword.value) {
-        console.log('Passwords do not match');
-        return;
-    }
-
-    const response = await authStore.register({
-        email: registerEmail.value,
-        password: registerPassword.value,
-        name: name.value,
-        phone: phone.value,
-        address: address.value
-    });
-
-    if (response) {
-        closeCallback();
-    } else {
-        console.log('failed to register');
-    }
-};
-
-const toggleForm = () => {
-    isRegistering.value = !isRegistering.value;
-};
-
-const sendVerificationCode = async () => {
-    try {
-        const response = await authStore.checkEmail(registerEmail.value);
-        console.log(response.data);
-    } catch (error) {
-        console.log(error);
-    }
-};
 </script>
 
 <style scoped>
