@@ -23,9 +23,6 @@ const openAuthDialog = () => {
 <template>
     <div class="layout-topbar">
         <div class="layout-topbar-logo-container">
-            <!-- <button class="layout-menu-button layout-topbar-action" @click="toggleMenu">
-                <i class="pi pi-bars"></i>
-            </button> -->
             <div class="layout-topbar-logo">
                 <img src="@/assets/img/doing_face.png" alt="" />
                 <span class="maple-bold">Chatting Story</span>
@@ -37,23 +34,14 @@ const openAuthDialog = () => {
                 <button type="button" class="layout-topbar-action" @click="toggleDarkMode">
                     <i :class="['pi', { 'pi-moon': isDarkTheme, 'pi-sun': !isDarkTheme }]"></i>
                 </button>
-                <!-- <div class="relative">
-                    <button
-                        v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-                        type="button"
-                        class="layout-topbar-action layout-topbar-action-highlight"
-                    >
-                        <i class="pi pi-palette"></i>
-                    </button>
-                    <AppConfigurator />
-                </div> -->
             </div>
             <div class="flex items-center">
                 <template v-if="user">
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <Button label="Login" icon="pi pi-sign-in" @click="openAuthDialog" variant="text" severity="contrast"></Button>
+                    <Button icon="pi pi-google" text></Button>
+                    <!-- <Button label="Login" icon="pi pi-sign-in" @click="openAuthDialog" variant="text" severity="contrast"></Button> -->
                 </template>
             </div>
             <button
