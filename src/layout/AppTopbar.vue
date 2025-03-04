@@ -3,6 +3,7 @@ import { useLayout } from '@/layout/composables/layout';
 import { useAuthStore } from '@/stores/auth';
 import { inject, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import GoogleLoginButtonSimple from '@/components/auth/GoogleLoginButtonSimple.vue';
 
 const { toggleDarkMode, isDarkTheme } = useLayout();
 
@@ -10,12 +11,6 @@ const authStore = useAuthStore();
 const router = useRouter();
 const route = useRoute();
 const user = inject('user');
-
-const showAuthDialog = ref(false);
-// 다이얼로그 열기
-const openAuthDialog = () => {
-    showAuthDialog.value = true;
-};
 </script>
 
 <template>
@@ -38,7 +33,7 @@ const openAuthDialog = () => {
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
-                    <Button icon="pi pi-google" text rounded></Button>
+                    <GoogleLoginButtonSimple :redirectPath="route.path" />
                 </template>
             </div>
             <button
