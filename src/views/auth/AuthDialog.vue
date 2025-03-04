@@ -2,92 +2,16 @@
     <Dialog v-model:visible="dialogVisible" class="w-4/5 max-w-lg px-2 py-2" :dismissableMask="true" modal>
         <template #container="{ closeCallback }">
             <div class="relative overflow-hidden" style="height: 54vh">
-                <!-- Login Form -->
-                <form
-                    autocomplete="off"
-                    @submit.prevent="onSignInClicked(closeCallback)"
-                    :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? '-translate-x-full' : 'translate-x-0']"
-                >
-                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="username" class="!bg-white/0 w-full" v-model="username" autocomplete="new-password" name="username" type="email"> </InputText>
-                                <label for="username">Email</label>
-                            </IftaLabel>
-                        </div>
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="password" class="!bg-white/0 w-full" type="password" v-model="password" autocomplete="new-password" name="password"> </InputText>
-                                <label for="password">Password</label>
-                            </IftaLabel>
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <Button type="submit" class="w-full" severity="secondary" label="Login"></Button>
-                        </div>
-
-                        <div class="flex gap-1 items-center">
-                            <hr class="flex-1" />
-                            <span class="text-gray-400 cursor-pointer" @click="toggleForm">register</span>
-                            <span class="text-gray-400">or continue with</span>
-                            <hr class="flex-1" />
-                        </div>
-                        <div class="flex flex-row gap-4 items-center justify-center">
-                            <Button v-slot="slotProps" asChild>
-                                <button v-bind="slotProps.a11yAttrs">
-                                    <i class="px-2 py-2 pi pi-google gradient-vertical clip-text"></i>
-                                </button>
-                            </Button>
-                            <Button v-slot="slotProps" asChild>
-                                <button v-bind="slotProps.a11yAttrs">
-                                    <i class="px-2 py-2 pi pi-github gradient-vertical clip-text"></i>
-                                </button>
-                            </Button>
-                        </div>
-                    </div>
-                </form>
-
-                <!-- Register Form -->
-                <form
-                    autocomplete="off"
-                    @submit.prevent="onRegisterSubmit(closeCallback)"
-                    :class="['absolute w-full h-full transition-all duration-500 ease-in-out overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100', isRegistering ? 'translate-x-0' : 'translate-x-full']"
-                >
-                    <div class="flex flex-col px-8 py-8 gap-4 rounded-2xl min-h-full">
-                        <div class="inline-flex flex-col gap-2">
-                            <InputGroup>
-                                <IftaLabel class="w-full !bg-white/0">
-                                    <InputText id="register-email" class="!bg-white/0 w-full" v-model="registerEmail" autocomplete="new-password"> </InputText>
-                                    <label for="register-email">Email</label>
-                                </IftaLabel>
-                                <InputGroupAddon>
-                                    <Button icon="pi pi-check" severity="secondary" variant="text" @click="sendVerificationCode"></Button>
-                                </InputGroupAddon>
-                            </InputGroup>
-                        </div>
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="register-password" class="!bg-white/0 w-full" type="password" v-model="registerPassword" autocomplete="new-password"> </InputText>
-                                <label for="register-password">Password</label>
-                            </IftaLabel>
-                        </div>
-                        <div class="inline-flex flex-col gap-2">
-                            <IftaLabel class="w-full !bg-white/0">
-                                <InputText id="confirm-password" class="!bg-white/0 w-full" type="password" v-model="confirmPassword" autocomplete="new-password"> </InputText>
-                                <label for="confirm-password">Confirm Password</label>
-                            </IftaLabel>
-                        </div>
-                        <!-- 추가 회원가입 필드들 -->
-
-                        <div class="flex items-center gap-4">
-                            <Button type="submit" class="w-full" severity="secondary" label="Register"> </Button>
-                        </div>
-                        <div class="flex gap-1 items-center">
-                            <hr class="flex-1" />
-                            <span class="text-gray-400 cursor-pointer" @click="toggleForm"> Back to login </span>
-                            <hr class="flex-1" />
-                        </div>
-                    </div>
-                </form>
+                <Button v-slot="slotProps" asChild>
+                    <button v-bind="slotProps.a11yAttrs">
+                        <i class="px-2 py-2 pi pi-google gradient-vertical clip-text"></i>
+                    </button>
+                </Button>
+                <Button v-slot="slotProps" asChild>
+                    <button v-bind="slotProps.a11yAttrs">
+                        <i class="px-2 py-2 pi pi-github gradient-vertical clip-text"></i>
+                    </button>
+                </Button>
             </div>
         </template>
     </Dialog>
