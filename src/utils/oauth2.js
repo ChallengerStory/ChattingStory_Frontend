@@ -1,3 +1,5 @@
+// src/utils/oauth2.js
+
 /**
  * OAuth2 창을 열고 창 상태를 추적하는 유틸리티 함수
  * @param {string} url - OAuth2 인증 URL
@@ -18,14 +20,26 @@ export function openOAuth2Window(url, windowName = 'OAuth2_Auth', options = {}) 
     // 새 창 열기
     const authWindow = window.open(url, windowName, `width=${width},height=${height},top=${top},left=${left}`);
 
-    // 창 닫힘 감지 (선택적)
+    // COOP 정책 우회를 위해 polling 대신 메시지 이벤트 리스너 사용
     if (onClose) {
-        const checkWindow = setInterval(() => {
-            if (authWindow?.closed) {
-                clearInterval(checkWindow);
-                onClose();
+        // 메인 창에서 메시지 수신 리스너 생성
+        const messageListener = (event) => {
+            // 보안을 위해 출처 확인 (필요한 경우)
+            if (event.origin !== window.location.origin) {
+                if (event.data === 'AUTH_WINDOW_CLOSED') {
+                    window.removeEventListener('message', messageListener);
+                    onClose();
+                }
             }
-        }, 500);
+        };
+
+        window.addEventListener('message', messageListener);
+
+        // 콜백 페이지에서 다음과 같은 코드를 추가해야 함:
+        // if (window.opener) {
+        //   window.opener.postMessage('AUTH_WINDOW_CLOSED', window.location.origin);
+        //   window.close();
+        // }
     }
 
     return authWindow;

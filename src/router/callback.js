@@ -1,6 +1,6 @@
 export default [
     {
-        path: '/oauth2/callback/',
-        component: () => import('@/views/callback/Callback.vue')
+        path: '/callback/oauth2/google',
+        component: () => import('@/views/callback/GoogleCallback.vue')
     }
 ];
