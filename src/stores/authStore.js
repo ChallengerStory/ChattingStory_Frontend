@@ -30,6 +30,7 @@ export const useAuthStore = defineStore('auth', {
                 });
 
                 this.user = response.data;
+                this.isInitialized = true;
                 const newAccessToken = response.headers['authorization']?.replace('Bearer ', '');
                 if (newAccessToken) {
                     this.setAccessToken(newAccessToken);
