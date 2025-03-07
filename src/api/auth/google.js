@@ -18,7 +18,7 @@ export const googleApi = {
                 console.warn('액세스 토큰 누락 또는 응답 형식 오류');
             }
 
-            return response.data;
+            return response;
         } catch (error) {
             console.error('Google OAuth 토큰 요청 실패:', error);
             throw error;

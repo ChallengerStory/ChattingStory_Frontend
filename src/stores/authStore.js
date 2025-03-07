@@ -1,6 +1,5 @@
 // src/stores/auth.js에 추가할 함수
 import { defineStore } from 'pinia';
-import { authApi } from '../api/auth/auth';
 import { googleApi } from '../api/auth/google';
 import axios from 'axios';
 
@@ -10,11 +9,7 @@ export const useAuthStore = defineStore('auth', {
         isInitialized: false,
         isLoading: false,
         error: null,
-        user: {
-            userId: null,
-            userIdentifier: null,
-            profileUrl: null
-        }
+        user: null
     }),
 
     getters: {
@@ -23,7 +18,9 @@ export const useAuthStore = defineStore('auth', {
     },
 
     actions: {
-        // 기존 함수들...
+        setAccessToken(accessToken) {
+            this.accessToken = accessToken;
+        },
         async initializeAuth() {
             if (this.isInitialized && this.user) return true;
 
@@ -47,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
         async logout() {
             try {
                 await axios.post(
-                    '/user/logout',
+                    '/auth/logout',
                     {},
                     {
                         withCredentials: true
@@ -76,12 +73,10 @@ export const useAuthStore = defineStore('auth', {
 
                 // 백엔드 API 호출하여 액세스 토큰 받기
                 const response = await googleApi.getAccessToken(code, state);
+                console.log(response);
 
-                if (!response.success) {
-                    throw new Error(response.error || '인증에 실패했습니다.');
-                }
-
-                const { access_token } = response.data;
+                this.user = response.data;
+                const access_token = response.headers['authorization']?.replace('Bearer ', '');
 
                 if (!access_token) {
                     throw new Error('응답에 액세스 토큰이 없습니다.');

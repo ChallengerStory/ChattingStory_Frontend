@@ -64,7 +64,7 @@ onMounted(async () => {
         // 오류 발생 시 더 오래 대기 후 창 닫기
         setTimeout(() => {
             window.close();
-        }, 3000);
+        }, 1000);
     }
 });
 </script>
