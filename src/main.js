@@ -4,7 +4,7 @@ import { setupAxiosInterceptors } from '../src/plugins/axios.js';
 import App from './App.vue';
 import installPrimeVue from './plugins/primevue';
 import router from './router';
-import { useAuthStore } from './stores/auth';
+import { useAuthStore } from './stores/authStore.js';
 const pinia = createPinia();
 
 /* styles */

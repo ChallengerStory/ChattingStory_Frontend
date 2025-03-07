@@ -7,7 +7,7 @@
 
 <script setup>
 import { computed, provide } from 'vue';
-import { useAuthStore } from './stores/auth';
+import { useAuthStore } from './stores/authStore';
 import AuthMessageHandler from './components/AuthMessageHandler.vue';
 const authStore = useAuthStore();
 

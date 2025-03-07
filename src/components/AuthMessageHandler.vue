@@ -1,7 +1,7 @@
 <!-- src/components/AuthHandler.vue -->
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore';
 import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();

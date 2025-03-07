@@ -1,31 +1,48 @@
-<!-- src/components/GoogleLoginButtonSimple.vue -->
+<!-- src/components/GoogleLoginButton.vue -->
 <template>
     <Button icon="pi pi-google" text rounded @click="openGoogleAuth" :disabled="isLoading" />
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { openOAuth2Window, buildOAuth2Url, generateOAuthState } from '@/utils/oauth2';
+import { ref, onMounted } from 'vue';
+import { useAuthStore } from '@/stores/authStore';
+import { generateOAuthState, buildOAuth2Url, openOAuth2Window } from '@/utils/oauth2';
 
-const props = defineProps({
-    redirectPath: {
-        type: String,
-        default: window.location.pathname
-    }
-});
-
+const authStore = useAuthStore();
 const isLoading = ref(false);
-let authWindow = null;
 
-// Google OAuth 상태 생성
-const generateState = () => {
-    const state = generateOAuthState();
-    const timestamp = Date.now().toString();
+// 인증 콜백 리스너 설정
+const setupAuthListener = () => {
+    window.addEventListener('storage', handleStorageChange);
+};
 
-    localStorage.setItem('google_oauth_state', state);
-    localStorage.setItem('google_oauth_state_timestamp', timestamp);
+// localStorage 변경 감지 핸들러
+const handleStorageChange = async (event) => {
+    // google_auth_code와 google_auth_state가 설정된 경우에만 처리
+    if (event.key === 'google_auth_code') {
+        const code = localStorage.getItem('google_auth_code');
+        const state = localStorage.getItem('google_auth_state');
 
-    return state;
+        if (code && state) {
+            try {
+                isLoading.value = true;
+
+                // 로컬스토리지에서 인증 데이터 가져오기
+                console.log('인증 데이터 감지:', { code: code.substring(0, 10) + '...', state });
+
+                // 인증 처리
+                await authStore.handleGoogleCallback(code, state);
+
+                // 처리 후 로컬스토리지 데이터 삭제
+                localStorage.removeItem('google_auth_code');
+                localStorage.removeItem('google_auth_state');
+            } catch (error) {
+                console.error('OAuth 인증 처리 오류:', error);
+            } finally {
+                isLoading.value = false;
+            }
+        }
+    }
 };
 
 // Google 인증 창 열기
@@ -35,15 +52,12 @@ const openGoogleAuth = () => {
 
     try {
         // 인증 상태 생성
-        const state = generateState();
-
-        // 리디렉션 경로 저장
-        localStorage.setItem('google_auth_redirect', props.redirectPath);
+        const state = generateOAuthState();
 
         // 환경 변수에서 OAuth 설정 가져오기
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
-        const scope = 'profile';
+        const scope = 'profile email';
 
         // OAuth URL 생성
         const authUrl = buildOAuth2Url({
@@ -58,15 +72,11 @@ const openGoogleAuth = () => {
             }
         });
 
-        // 인증 창 리스너 설정
-        window.addEventListener('message', handleAuthMessage, false);
-
         // 새 창 열기
-        authWindow = openOAuth2Window(authUrl, 'Google_Auth', {
+        openOAuth2Window(authUrl, 'Google_Auth', {
             width: 500,
             height: 600,
             onClose: () => {
-                authWindow = null;
                 isLoading.value = false;
             }
         });
@@ -76,16 +86,7 @@ const openGoogleAuth = () => {
     }
 };
 
-// 인증 창으로부터 메시지 처리
-const handleAuthMessage = (event) => {
-    // 보안을 위해 출처 확인
-    if (event.origin !== window.location.origin) return;
-
-    // 성공 메시지 확인
-    if (event.data?.type === 'GOOGLE_AUTH_SUCCESS') {
-        // 성공 시 페이지 새로고침 또는 다른 처리
-        window.removeEventListener('message', handleAuthMessage);
-        window.location.reload();
-    }
-};
+onMounted(() => {
+    setupAuthListener();
+});
 </script>

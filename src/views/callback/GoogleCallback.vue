@@ -3,33 +3,24 @@
     <div class="oauth-callback">
         <div v-if="isLoading" class="loading">
             <div class="spinner"></div>
-            <p>Google 계정으로 로그인 중...</p>
+            <p>인증 정보 처리 중...</p>
         </div>
         <div v-else-if="error" class="error">
             <p>{{ error }}</p>
-            <button @click="goToLogin" class="btn">로그인 페이지로 돌아가기</button>
+        </div>
+        <div v-else class="success">
+            <p>인증이 완료되었습니다. 이 창은 자동으로 닫힙니다.</p>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useGoogleAuthStore } from '@/stores/googleAuthStore';
-import { useAuthStore } from '@/stores/auth';
+import { useRoute } from 'vue-router';
 
-const router = useRouter();
 const route = useRoute();
-const googleAuthStore = useGoogleAuthStore();
-const authStore = useAuthStore();
-
 const isLoading = ref(true);
 const error = ref('');
-
-// 로그인 페이지로 이동
-const goToLogin = () => {
-    router.push('/login');
-};
 
 onMounted(async () => {
     try {
@@ -42,63 +33,38 @@ onMounted(async () => {
         }
 
         // 콜백 처리 전 콘솔에 로그
-        console.log('콜백 처리 시작:', { code: code.substring(0, 10) + '...', state });
+        console.log('콜백 수신:', { code: code.substring(0, 10) + '...', state });
 
-        // 콜백 처리
-        const success = await googleAuthStore.handleAuthCallback(code, state);
+        // 로컬 스토리지에 인증 정보 저장 (메인 창에서 처리하기 위함)
+        localStorage.setItem('google_auth_code', code);
+        localStorage.setItem('google_auth_state', state);
 
-        console.log('콜백 처리 결과:', success);
-        console.log('Auth Store 상태:', {
-            initialized: authStore.isInitialized,
-            user: authStore.user,
-            token: authStore.accessToken ? '존재함' : '없음'
-        });
+        // 메인 창에서 처리할 시간을 주기 위해 잠시 대기
+        setTimeout(() => {
+            isLoading.value = false;
 
-        if (success) {
-            // 토큰 정보 디버깅
-            console.log('Access Token 존재 여부:', !!authStore.accessToken);
-
-            // 인증 데이터를 localStorage에 저장
-            const authData = {
-                type: 'GOOGLE_AUTH_SUCCESS',
-                timestamp: Date.now(),
-                userId: authStore.user.userId,
-                userIdentifier: authStore.user.userIdentifier,
-                profileUrl: authStore.user.profileUrl,
-                accessToken: authStore.accessToken,
-                isAuthenticated: authStore.isAuthenticated,
-                isInitialized: authStore.isInitialized
-            };
-
-            localStorage.setItem('google_auth_data', JSON.stringify(authData));
-            console.log('인증 데이터 localStorage에 저장됨:', authData);
-
-            // 추가 디버깅용 정보
-            localStorage.setItem('callback_token_status', authStore.accessToken ? 'token_exists' : 'no_token');
-
-            // 창 닫기 전 지연
+            // 창 닫기 전 로컬스토리지에 플래그 설정 및 opener에게 알림
             setTimeout(() => {
+                localStorage.setItem('google_auth_completed', 'true');
+                // 창을 연 부모 창의 함수 호출 (COOP 우회)
+                if (window.opener && window.opener.handlePopupClosed) {
+                    try {
+                        window.opener.handlePopupClosed();
+                    } catch (e) {
+                        console.error('부모 창 접근 오류:', e);
+                    }
+                }
                 window.close();
             }, 1000);
-        }
+        }, 1500);
     } catch (err) {
         error.value = `인증 오류: ${err.message}`;
         console.error('Google OAuth 콜백 오류:', err);
 
-        // 오류 정보 저장
-        localStorage.setItem(
-            'google_auth_error',
-            JSON.stringify({
-                timestamp: Date.now(),
-                error: err.message
-            })
-        );
-
+        // 오류 발생 시 더 오래 대기 후 창 닫기
         setTimeout(() => {
             window.close();
-        }, 3000); // 오류 메시지 확인할 시간 제공
-    } finally {
-        isLoading.value = false;
+        }, 3000);
     }
 });
 </script>
@@ -114,10 +80,21 @@ onMounted(async () => {
     padding: 0 20px;
 }
 
-.loading {
+.loading,
+.success,
+.error {
     display: flex;
     flex-direction: column;
     align-items: center;
+    max-width: 400px;
+}
+
+.success {
+    color: #4caf50;
+}
+
+.error {
+    color: #d32f2f;
 }
 
 .spinner {
@@ -137,25 +114,5 @@ onMounted(async () => {
     100% {
         transform: rotate(360deg);
     }
-}
-
-.error {
-    color: #d32f2f;
-    max-width: 400px;
-}
-
-.btn {
-    background-color: #4285f4;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 4px;
-    cursor: pointer;
-    margin-top: 20px;
-    font-weight: 500;
-}
-
-.btn:hover {
-    background-color: #3367d6;
 }
 </style>

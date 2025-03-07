@@ -1,82 +1,69 @@
 // src/utils/oauth2.js
 
 /**
- * OAuth2 창을 열고 창 상태를 추적하는 유틸리티 함수
- * @param {string} url - OAuth2 인증 URL
- * @param {string} windowName - 인증 창 이름
- * @param {Object} options - 창 옵션 및 콜백
- * @param {number} options.width - 창 너비 (기본값: 580)
- * @param {number} options.height - 창 높이 (기본값: 600)
- * @param {function} options.onClose - 창이 닫힐 때 실행할 콜백 함수
- * @returns {Window} 열린 창 객체
+ * OAuth2 상태 문자열 생성
+ * @returns {string} 랜덤 상태 문자열
  */
-export function openOAuth2Window(url, windowName = 'OAuth2_Auth', options = {}) {
-    const { width = 580, height = 600, onClose = null } = options;
+export const generateOAuthState = () => {
+    const array = new Uint8Array(16);
+    window.crypto.getRandomValues(array);
+    return Array.from(array, (byte) => byte.toString(16).padStart(2, '0')).join('');
+};
 
-    // 새 창 중앙 배치 계산
+/**
+ * OAuth2 URL 생성
+ * @param {Object} options - OAuth2 옵션
+ * @param {string} options.authUrl - 인증 URL
+ * @param {string} options.clientId - 클라이언트 ID
+ * @param {string} options.redirectUri - 리디렉션 URI
+ * @param {string} options.scope - 범위
+ * @param {string} options.state - 상태
+ * @param {Object} options.additionalParams - 추가 파라미터
+ * @returns {string} 완성된 OAuth2 URL
+ */
+export const buildOAuth2Url = ({ authUrl, clientId, redirectUri, scope, state, additionalParams = {} }) => {
+    const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        scope,
+        state,
+        ...additionalParams
+    });
+
+    return `${authUrl}?${params.toString()}`;
+};
+
+/**
+ * OAuth2 팝업 창 열기
+ * @param {string} url - 인증 URL
+ * @param {string} title - 창 제목
+ * @param {Object} options - 창 옵션
+ * @param {number} options.width - 창 너비
+ * @param {number} options.height - 창 높이
+ * @param {Function} options.onClose - 창 닫힘 이벤트 핸들러
+ * @returns {Window} 팝업 창 객체
+ */
+export const openOAuth2Window = (url, title, { width = 500, height = 600, onClose } = {}) => {
+    // 창 위치 계산 (중앙 정렬)
     const left = window.screenX + (window.outerWidth - width) / 2;
     const top = window.screenY + (window.outerHeight - height) / 2;
 
-    // 새 창 열기
-    const authWindow = window.open(url, windowName, `width=${width},height=${height},top=${top},left=${left}`);
+    // 팝업 창 특성
+    const features = [`width=${width}`, `height=${height}`, `left=${left}`, `top=${top}`, 'resizable=yes', 'scrollbars=yes'].join(',');
 
-    // COOP 정책 우회를 위해 polling 대신 메시지 이벤트 리스너 사용
+    // 창 열기
+    const popup = window.open(url, title, features);
+
+    // COOP 정책으로 인한 window.closed 접근 제한 문제 해결
+    // 창 닫힘을 직접 감지하는 대신 localStorage 이벤트에 의존
     if (onClose) {
-        // 메인 창에서 메시지 수신 리스너 생성
-        const messageListener = (event) => {
-            // 보안을 위해 출처 확인 (필요한 경우)
-            if (event.origin !== window.location.origin) {
-                if (event.data === 'AUTH_WINDOW_CLOSED') {
-                    window.removeEventListener('message', messageListener);
-                    onClose();
-                }
-            }
+        // 팝업 창이 닫히면 로컬스토리지에 플래그를 설정할 수 있도록
+        // 함수를 window 객체에 추가 (팝업에서 접근 가능)
+        window.handlePopupClosed = () => {
+            // 팝업이 닫힐 때 이 함수가 호출될 것임
+            onClose();
         };
-
-        window.addEventListener('message', messageListener);
-
-        // 콜백 페이지에서 다음과 같은 코드를 추가해야 함:
-        // if (window.opener) {
-        //   window.opener.postMessage('AUTH_WINDOW_CLOSED', window.location.origin);
-        //   window.close();
-        // }
     }
 
-    return authWindow;
-}
-
-/**
- * OAuth2 인증 URL 생성 유틸리티
- * @param {Object} params - OAuth2 파라미터
- * @param {string} params.authUrl - 인증 기본 URL
- * @param {string} params.clientId - 클라이언트 ID
- * @param {string} params.redirectUri - 리디렉션 URI
- * @param {string} params.scope - 요청 스코프
- * @param {string} params.state - 상태 파라미터
- * @param {Object} params.additionalParams - 추가 파라미터 객체
- * @returns {string} 완성된 OAuth2 URL
- */
-export function buildOAuth2Url(params) {
-    const { authUrl, clientId, redirectUri, scope, state, additionalParams = {} } = params;
-
-    const url = new URL(authUrl);
-    url.searchParams.append('client_id', clientId);
-    url.searchParams.append('redirect_uri', redirectUri);
-    url.searchParams.append('scope', scope);
-    url.searchParams.append('state', state);
-
-    // 추가 파라미터 처리
-    Object.entries(additionalParams).forEach(([key, value]) => {
-        url.searchParams.append(key, value);
-    });
-
-    return url.toString();
-}
-
-/**
- * 랜덤 state 문자열 생성 유틸리티
- * @returns {string} 랜덤 상태 문자열
- */
-export function generateOAuthState() {
-    return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
+    return popup;
+};

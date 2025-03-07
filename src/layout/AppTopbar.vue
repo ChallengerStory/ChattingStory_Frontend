@@ -1,6 +1,6 @@
 <script setup>
 import { useLayout } from '@/layout/composables/layout';
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore';
 import { inject, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import GoogleLoginButtonSimple from '@/components/auth/GoogleLoginButtonSimple.vue';
@@ -29,7 +29,7 @@ const user = inject('user');
                 </button>
             </div>
             <div class="flex items-center">
-                <template v-if="user.userId">
+                <template v-if="authStore.isInitialized">
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
@@ -39,7 +39,7 @@ const user = inject('user');
             <button
                 class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-                v-if="user"
+                v-if="authStore.isInitialized"
             >
                 <i class="pi pi-ellipsis-v"></i>
             </button>

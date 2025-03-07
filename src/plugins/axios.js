@@ -1,5 +1,5 @@
 // plugins/axios.js
-import { useAuthStore } from '@/stores/auth';
+import { useAuthStore } from '@/stores/authStore';
 import axios from 'axios';
 
 axios.defaults.baseURL = '/api';
