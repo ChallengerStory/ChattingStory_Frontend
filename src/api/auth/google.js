@@ -12,7 +12,7 @@ export const googleApi = {
             console.log('Google OAuth 응답 성공:', response.data.success);
 
             // 토큰 응답 확인
-            if (response.data.success && response.data.data?.access_token) {
+            if (response.data) {
                 console.log('액세스 토큰 수신 확인');
             } else {
                 console.warn('액세스 토큰 누락 또는 응답 형식 오류');

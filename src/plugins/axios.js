@@ -12,8 +12,8 @@ export function setupAxiosInterceptors() {
             console.log(`requestUrl: ${config.url}`);
             const authStore = useAuthStore();
             if (authStore.accessToken) {
-                console.log('현재 요청의 헤더: ', config.headers['Authorization']);
                 config.headers['Authorization'] = `Bearer ${authStore.accessToken}`;
+                console.log('현재 요청의 헤더: ', config.headers['Authorization']);
             }
             return config;
         },
