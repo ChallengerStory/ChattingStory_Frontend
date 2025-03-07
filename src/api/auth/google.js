@@ -9,7 +9,7 @@ export const googleApi = {
      * @returns {Promise<Object>} 액세스 토큰 응답
      */
     async getAccessToken(code, state) {
-        const response = await axios.post('/oauth2/google/access_token', {
+        const response = await axios.post('/oauth2/google', {
             code,
             state
         });
