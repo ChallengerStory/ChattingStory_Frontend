@@ -29,7 +29,7 @@ const user = inject('user');
                 </button>
             </div>
             <div class="flex items-center">
-                <template v-if="authStore.isInitialized">
+                <template v-if="authStore.isAuthenticated">
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">
@@ -39,7 +39,7 @@ const user = inject('user');
             <button
                 class="layout-topbar-menu-button layout-topbar-action"
                 v-styleclass="{ selector: '@next', enterFromClass: 'hidden', enterActiveClass: 'animate-scalein', leaveToClass: 'hidden', leaveActiveClass: 'animate-fadeout', hideOnOutsideClick: true }"
-                v-if="authStore.isInitialized"
+                v-if="authStore.isAuthenticated"
             >
                 <i class="pi pi-ellipsis-v"></i>
             </button>

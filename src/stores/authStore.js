@@ -13,8 +13,8 @@ export const useAuthStore = defineStore('auth', {
     }),
 
     getters: {
-        isAuthenticated: (state) => !!state.accessToken,
-        hasUserProfile: (state) => !!state.user.userIdentifier && !!state.user.profileUrl
+        isAuthenticated: (state) => !!state.accessToken
+        // hasUserProfile: (state) => !!state.user. && !!state.user.profile_url
     },
 
     actions: {
