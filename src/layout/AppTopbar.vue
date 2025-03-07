@@ -29,7 +29,7 @@ const user = inject('user');
                 </button>
             </div>
             <div class="flex items-center">
-                <template v-if="user">
+                <template v-if="user.userId">
                     {{ user.user_login }}
                 </template>
                 <template v-else class="flex items-center">

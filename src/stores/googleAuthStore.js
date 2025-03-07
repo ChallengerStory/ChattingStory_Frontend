@@ -83,28 +83,63 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
             this.error = null;
             const authStore = useAuthStore();
 
+            console.log('Starting OAuth callback handler');
+            console.log('Code received (partial):', code.substring(0, 10) + '...');
+            console.log('State received:', returnedState);
+            console.log('Stored state:', this.state);
+            console.log('Is state valid?', this.isStateValid);
+
             try {
                 // state 검증
                 if (!this.isStateValid || returnedState !== this.state) {
+                    console.error('State validation failed!');
+                    console.error('Stored state:', this.state);
+                    console.error('Returned state:', returnedState);
+                    console.error('State timestamp:', this.stateTimestamp);
+                    console.error('Is state valid?', this.isStateValid);
                     throw new Error('Invalid state parameter');
                 }
+
+                console.log('State validation successful');
+                console.log('Sending code to backend for token exchange...');
 
                 // 백엔드에 코드 전송하여 액세스 토큰 얻기
                 const response = await googleApi.getAccessToken(code, returnedState);
 
+                console.log('Response received from backend:', response.success ? 'Success' : 'Failed');
+                if (response.success) {
+                    console.log('Response data:', response.data);
+                    console.log('User identifier:', response.data.user_identifier);
+                    console.log('User ID:', response.data.user_id);
+                    console.log('Profile URL available:', !!response.data.profile_url);
+                    console.log('Access token received (partial):', response.data.access_token ? response.data.access_token.substring(0, 10) + '...' : 'No token');
+                } else {
+                    console.error('Error from backend:', response.error);
+                }
+
                 // 인증 스토어에 응답 처리 위임
+                console.log('Delegating response handling to auth store...');
                 const success = await authStore.handleGoogleAuthResponse(response);
+                console.log('Auth store processing result:', success ? 'Success' : 'Failed');
+                console.log('Auth store user after processing:', authStore.user);
 
                 // state 초기화
+                console.log('Clearing OAuth state');
                 this.clearOAuthState();
                 return success;
             } catch (error) {
                 console.error('Auth error:', error);
+                console.error('Error details:', error.message);
+                if (error.response) {
+                    console.error('Response status:', error.response.status);
+                    console.error('Response data:', error.response.data);
+                }
                 this.error = error.message || 'Authentication failed';
                 authStore.handleAuthError(error);
                 throw error;
             } finally {
                 this.isLoading = false;
+                console.log('OAuth callback handler completed');
             }
         },
 

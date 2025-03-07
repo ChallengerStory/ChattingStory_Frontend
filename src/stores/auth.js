@@ -7,15 +7,21 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: null,
         isInitialized: false,
-        userIdentifier: localStorage.getItem('user_identifier') || null,
-        profileUrl: localStorage.getItem('profile_url') || null,
         isLoading: false,
-        error: null
+        error: null,
+        user: {
+            userId: localStorage.getItem('user_id') || null,
+            userIdentifier: localStorage.getItem('user_identifier') || null,
+            profileUrl: localStorage.getItem('profile_url') || null
+        }
     }),
 
     getters: {
         isAuthenticated: (state) => !!state.accessToken,
-        hasUserProfile: (state) => !!state.userIdentifier && !!state.profileUrl
+        hasUserProfile: (state) => !!state.user.userIdentifier && !!state.user.profileUrl,
+        userId: (state) => state.user.userId,
+        userIdentifier: (state) => state.user.userIdentifier,
+        profileUrl: (state) => state.user.profileUrl
     },
 
     actions: {
@@ -28,11 +34,20 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        setUserProfile(userIdentifier, profileUrl) {
-            this.userIdentifier = userIdentifier;
-            this.profileUrl = profileUrl;
+        setUserProfile(userId, userIdentifier, profileUrl) {
+            this.user = {
+                userId,
+                userIdentifier,
+                profileUrl
+            };
 
             // Store in localStorage for persistence
+            if (userId) {
+                localStorage.setItem('user_id', userId);
+            } else {
+                localStorage.removeItem('user_id');
+            }
+
             if (userIdentifier) {
                 localStorage.setItem('user_identifier', userIdentifier);
             } else {
@@ -56,10 +71,10 @@ export const useAuthStore = defineStore('auth', {
                 const response = await authApi.refreshToken();
 
                 if (response.success) {
-                    const { access_token, user_identifier, profile_url } = response.data;
+                    const { user_id, user_identifier, access_token, profile_url } = response.data;
 
                     this.setAccessToken(access_token);
-                    this.setUserProfile(user_identifier, profile_url);
+                    this.setUserProfile(user_id, user_identifier, profile_url);
                     this.isInitialized = true;
                     return true;
                 }
@@ -73,21 +88,42 @@ export const useAuthStore = defineStore('auth', {
         },
 
         async handleGoogleAuthResponse(response) {
+            console.log('Auth store processing Google response');
+
             if (!response || !response.success) {
+                console.error('Invalid or unsuccessful response:', response);
                 throw new Error(response?.error || 'Authentication failed');
             }
-            console.log(response);
-            const { access_token, user_identifier, profile_url } = response.data;
+
+            console.log('Response is valid, extracting data');
+            console.log('Response data keys:', Object.keys(response.data));
+
+            const { user_id, user_identifier, access_token, profile_url } = response.data;
+
+            // Validate required fields
+            if (!access_token) {
+                console.error('Missing access token in response');
+                throw new Error('Missing access token in response');
+            }
+
+            if (!user_identifier) {
+                console.error('Missing user identifier in response');
+                throw new Error('Missing user identifier in response');
+            }
 
             // Set access token for API calls
+            console.log('Setting access token (partial):', access_token ? access_token.substring(0, 10) + '...' : 'NULL');
             this.setAccessToken(access_token);
 
             // Store user identifier and profile
-            this.setUserProfile(user_identifier, profile_url);
+            console.log('Setting user profile:', { user_id, user_identifier, profile_url });
+            this.setUserProfile(user_id, user_identifier, profile_url);
 
             // Note: refresh_token is handled by the backend as an HTTP-only cookie
+            console.log('Setting authentication initialized');
             this.isInitialized = true;
 
+            console.log('Google Auth response successfully processed');
             return true;
         },
 
@@ -112,7 +148,7 @@ export const useAuthStore = defineStore('auth', {
             }
 
             this.accessToken = null;
-            this.setUserProfile(null, null);
+            this.setUserProfile(null, null, null);
             this.isInitialized = false;
             delete axios.defaults.headers.common['Authorization'];
         },

@@ -52,24 +52,32 @@ onMounted(async () => {
             // 창을 닫거나 리디렉션
             if (window.opener) {
                 try {
-                    // 성공 메시지 전송
-                    window.opener.postMessage(
-                        {
-                            type: 'GOOGLE_AUTH_SUCCESS',
-                            userIdentifier: authStore.userIdentifier,
-                            profileUrl: authStore.profileUrl
-                        },
-                        window.location.origin
-                    );
+                    console.log('Authentication successful, preparing to send data to parent window');
 
-                    // 창 닫힘 알림 (COOP 정책 대응)
-                    window.opener.postMessage('AUTH_WINDOW_CLOSED', window.location.origin);
+                    // COOP 정책으로 인해 postMessage가 차단될 수 있으므로 localStorage를 통한 통신 방식 사용
+                    const authData = {
+                        type: 'GOOGLE_AUTH_SUCCESS',
+                        timestamp: Date.now(),
+                        userId: authStore.user.userId,
+                        userIdentifier: authStore.user.userIdentifier,
+                        profileUrl: authStore.user.profileUrl
+                    };
+
+                    // localStorage에 인증 데이터 저장 (메인 창에서 polling으로 확인)
+                    localStorage.setItem('auth_popup_data', JSON.stringify(authData));
+                    console.log('Auth data stored in localStorage for parent window');
+
+                    // 창 닫기 전 약간의 지연
+                    setTimeout(() => {
+                        window.close();
+                    }, 300);
                 } catch (e) {
-                    console.error('메시지 전송 오류:', e);
+                    console.error('인증 데이터 저장 오류:', e);
+                    window.close();
                 }
-                window.close();
             } else {
                 // 일반 리디렉션인 경우
+                console.log('No parent window found, redirecting to:', redirectPath);
                 router.push(redirectPath);
             }
         }
@@ -80,10 +88,25 @@ onMounted(async () => {
         // 오류가 발생해도 부모 창에 알림
         if (window.opener) {
             try {
-                window.opener.postMessage({ type: 'GOOGLE_AUTH_ERROR', error: err.message }, window.location.origin);
-                window.opener.postMessage('AUTH_WINDOW_CLOSED', window.location.origin);
+                console.log('Authentication failed, storing error in localStorage for parent window');
+
+                // localStorage를 통한 오류 전달
+                localStorage.setItem(
+                    'auth_popup_data',
+                    JSON.stringify({
+                        type: 'GOOGLE_AUTH_ERROR',
+                        timestamp: Date.now(),
+                        error: err.message
+                    })
+                );
+
+                // 지연 후 창 닫기
+                setTimeout(() => {
+                    window.close();
+                }, 300);
             } catch (e) {
-                console.error('오류 메시지 전송 실패:', e);
+                console.error('오류 메시지 저장 실패:', e);
+                window.close();
             }
         }
     } finally {
