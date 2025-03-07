@@ -1,32 +1,22 @@
-// stores/google/useGoogleAuthStore.js
+// src/stores/googleAuthStore.js
 import { defineStore } from 'pinia';
 import { googleApi } from '@/api/auth/google';
 import { openOAuth2Window, buildOAuth2Url, generateOAuthState } from '@/utils/oauth2';
+import { useAuthStore } from './auth';
 
 export const useGoogleAuthStore = defineStore('googleAuth', {
     state: () => ({
-        // 인증 관련 상태
-        accessToken: localStorage.getItem('google_token') || null,
-        userInfo: JSON.parse(localStorage.getItem('google_user_info')) || null,
-        isLoading: false,
-        error: null,
-
         // OAuth 상태
         state: localStorage.getItem('google_oauth_state'),
         stateTimestamp: localStorage.getItem('google_oauth_state_timestamp'),
         authWindow: null,
 
-        // 초기화 상태
-        isInitialized: false
+        // 로딩 상태
+        isLoading: false,
+        error: null
     }),
 
     getters: {
-        isAuthenticated: (state) => !!state.accessToken,
-        username: (state) => state.userInfo?.name,
-        email: (state) => state.userInfo?.email,
-        profilePicture: (state) => state.userInfo?.picture,
-        hasError: (state) => !!state.error,
-
         // OAuth state 유효성 검사
         isStateValid: (state) => {
             if (!state.state || !state.stateTimestamp) return false;
@@ -91,6 +81,7 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
         async handleAuthCallback(code, returnedState) {
             this.isLoading = true;
             this.error = null;
+            const authStore = useAuthStore();
 
             try {
                 // state 검증
@@ -99,21 +90,18 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
                 }
 
                 // 백엔드에 코드 전송하여 액세스 토큰 얻기
-                const tokenData = await googleApi.getAccessToken(code, returnedState);
+                const response = await googleApi.getAccessToken(code, returnedState);
 
-                if (tokenData.success) {
-                    this.setAccessToken(tokenData.data.access_token);
-                    await this.fetchUserInfo();
+                // 인증 스토어에 응답 처리 위임
+                const success = await authStore.handleGoogleAuthResponse(response);
 
-                    // state 초기화
-                    this.clearOAuthState();
-                    return true;
-                } else {
-                    throw new Error('Failed to get access token');
-                }
+                // state 초기화
+                this.clearOAuthState();
+                return success;
             } catch (error) {
                 console.error('Auth error:', error);
                 this.error = error.message || 'Authentication failed';
+                authStore.handleAuthError(error);
                 throw error;
             } finally {
                 this.isLoading = false;
@@ -128,45 +116,15 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
             localStorage.removeItem('google_oauth_state_timestamp');
         },
 
-        // 액세스 토큰 설정
-        setAccessToken(token) {
-            this.accessToken = token;
-            if (token) {
-                localStorage.setItem('google_token', token);
-            } else {
-                localStorage.removeItem('google_token');
-            }
-        },
-
-        // Google 사용자 정보 가져오기
-        async fetchUserInfo() {
-            if (!this.accessToken) {
-                throw new Error('No access token available');
-            }
-
-            this.isLoading = true;
-
-            try {
-                const userData = await googleApi.getUserInfo(this.accessToken);
-                this.userInfo = userData;
-                localStorage.setItem('google_user_info', JSON.stringify(userData));
-                return userData;
-            } catch (error) {
-                console.error('Error fetching user info:', error);
-                this.error = error.response?.data?.message || error.message;
-                throw error;
-            } finally {
-                this.isLoading = false;
-            }
-        },
-
         // Google 연동 해제
         async revokeAccess() {
-            if (!this.accessToken) return;
+            const authStore = useAuthStore();
+
+            if (!authStore.isAuthenticated) return;
 
             try {
                 await googleApi.revokeAccess();
-                this.logout();
+                authStore.logout();
                 return true;
             } catch (error) {
                 console.error('Error revoking access:', error);
@@ -174,48 +132,9 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
             }
         },
 
-        // 로그아웃
-        logout() {
-            this.accessToken = null;
-            this.userInfo = null;
-            this.error = null;
-            this.clearOAuthState();
-            localStorage.removeItem('google_token');
-            localStorage.removeItem('google_user_info');
-        },
-
         // 에러 초기화
         clearError() {
             this.error = null;
-        },
-
-        // 초기화 상태 설정
-        setInitialized() {
-            this.isInitialized = true;
-        },
-
-        // 사용자 데이터 검증
-        verifyUserData() {
-            const hasStoreData = !!this.userInfo && !!this.accessToken;
-            const hasLocalStorage = !!localStorage.getItem('google_user_info') && !!localStorage.getItem('google_token');
-
-            // 로컬 스토리지에서 복구 시도
-            if (!this.userInfo && localStorage.getItem('google_user_info')) {
-                try {
-                    this.userInfo = JSON.parse(localStorage.getItem('google_user_info'));
-                } catch (e) {
-                    console.error('Error parsing stored user info:', e);
-                }
-            }
-
-            if (!this.accessToken && localStorage.getItem('google_token')) {
-                this.accessToken = localStorage.getItem('google_token');
-            }
-
-            return {
-                hasStoreData,
-                hasLocalStorage
-            };
         }
     }
 });

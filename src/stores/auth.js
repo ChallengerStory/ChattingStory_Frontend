@@ -7,11 +7,15 @@ export const useAuthStore = defineStore('auth', {
     state: () => ({
         accessToken: null,
         isInitialized: false,
-        user: null
+        userIdentifier: localStorage.getItem('user_identifier') || null,
+        profileUrl: localStorage.getItem('profile_url') || null,
+        isLoading: false,
+        error: null
     }),
 
     getters: {
-        isAuthenticated: (state) => !!state.accessToken
+        isAuthenticated: (state) => !!state.accessToken,
+        hasUserProfile: (state) => !!state.userIdentifier && !!state.profileUrl
     },
 
     actions: {
@@ -24,34 +28,38 @@ export const useAuthStore = defineStore('auth', {
             }
         },
 
-        async login(email, password) {
-            try {
-                const { accessToken, user } = await authApi.login(email, password);
+        setUserProfile(userIdentifier, profileUrl) {
+            this.userIdentifier = userIdentifier;
+            this.profileUrl = profileUrl;
 
-                if (!accessToken) {
-                    throw new Error('No access token received');
-                }
+            // Store in localStorage for persistence
+            if (userIdentifier) {
+                localStorage.setItem('user_identifier', userIdentifier);
+            } else {
+                localStorage.removeItem('user_identifier');
+            }
 
-                this.setAccessToken(accessToken);
-                this.user = user;
-                this.isInitialized = true;
-
-                return true;
-            } catch (error) {
-                this.handleAuthError(error);
-                return false;
+            if (profileUrl) {
+                localStorage.setItem('profile_url', profileUrl);
+            } else {
+                localStorage.removeItem('profile_url');
             }
         },
 
         async initializeAuth() {
-            if (this.isInitialized && this.user) return true;
+            if (this.isInitialized && this.accessToken) return true;
+
+            this.isLoading = true;
 
             try {
-                const { accessToken, user } = await authApi.refreshToken();
+                // The refresh token is sent automatically as an HTTP-only cookie
+                const response = await authApi.refreshToken();
 
-                if (accessToken) {
-                    this.setAccessToken(accessToken);
-                    this.user = user;
+                if (response.success) {
+                    const { access_token, user_identifier, profile_url } = response.data;
+
+                    this.setAccessToken(access_token);
+                    this.setUserProfile(user_identifier, profile_url);
                     this.isInitialized = true;
                     return true;
                 }
@@ -59,45 +67,58 @@ export const useAuthStore = defineStore('auth', {
             } catch (error) {
                 this.handleAuthError(error);
                 return false;
+            } finally {
+                this.isLoading = false;
             }
         },
 
+        async handleGoogleAuthResponse(response) {
+            if (!response || !response.success) {
+                throw new Error(response?.error || 'Authentication failed');
+            }
+            console.log(response);
+            const { access_token, user_identifier, profile_url } = response.data;
+
+            // Set access token for API calls
+            this.setAccessToken(access_token);
+
+            // Store user identifier and profile
+            this.setUserProfile(user_identifier, profile_url);
+
+            // Note: refresh_token is handled by the backend as an HTTP-only cookie
+            this.isInitialized = true;
+
+            return true;
+        },
+
         async logout() {
+            this.isLoading = true;
+
             try {
+                // This should clear the HTTP-only cookie on the server
                 await authApi.logout();
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
                 this.handleAuthError();
-            }
-        },
-
-        async checkEmail(email) {
-            try {
-                return await authApi.checkEmail(email);
-            } catch (error) {
-                this.handleAuthError(error);
-                throw error;
-            }
-        },
-
-        async sendVerification(email) {
-            try {
-                return await authApi.sendVerification(email);
-            } catch (error) {
-                console.error('Send verification failed:', error);
-                throw error;
+                this.isLoading = false;
             }
         },
 
         handleAuthError(error) {
             if (error) {
                 console.error('Auth error:', error);
+                this.error = error.message || 'Authentication failed';
             }
+
             this.accessToken = null;
-            this.user = null;
+            this.setUserProfile(null, null);
             this.isInitialized = false;
             delete axios.defaults.headers.common['Authorization'];
+        },
+
+        clearError() {
+            this.error = null;
         }
     }
 });

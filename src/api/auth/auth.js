@@ -1,35 +1,26 @@
-// src/api/auth.js
+// src/api/auth/auth.js
 import axios from 'axios';
 
 export const authApi = {
-    async login(email, password) {
-        const response = await axios.post('/auth/login', { email, password }, { withCredentials: true });
-        return {
-            accessToken: response.headers.authorization?.replace('Bearer ', ''),
-            user: response.data
-        };
-    },
-
+    // 토큰 갱신 - 서버가 HTTP-only 쿠키를 확인하고 새 토큰 반환
     async refreshToken() {
-        const response = await axios.get('/auth/refresh', {
-            withCredentials: true
-        });
-
-        return {
-            accessToken: response.headers.authorization?.replace('Bearer ', ''),
-            user: response.data
-        };
+        try {
+            const response = await axios.get('/auth/refresh');
+            return response.data;
+        } catch (error) {
+            console.error('Token refresh failed:', error);
+            throw error;
+        }
     },
 
+    // 로그아웃 - 서버에서 HTTP-only 쿠키 제거
     async logout() {
-        return await axios.post('/auth/logout', {}, { withCredentials: true });
-    },
-
-    async checkEmail(email) {
-        return await axios.get(`/auth/check-email?email=${encodeURIComponent(email)}`);
-    },
-
-    async sendVerification(email) {
-        return await axios.get(`/auth/send-verification?email=${encodeURIComponent(email)}`);
+        try {
+            const response = await axios.post('/auth/logout');
+            return response.data;
+        } catch (error) {
+            console.error('Logout failed:', error);
+            throw error;
+        }
     }
 };

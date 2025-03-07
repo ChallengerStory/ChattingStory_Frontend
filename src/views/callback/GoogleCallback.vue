@@ -16,10 +16,12 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useGoogleAuthStore } from '@/stores/googleAuthStore';
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter();
 const route = useRoute();
 const googleAuthStore = useGoogleAuthStore();
+const authStore = useAuthStore();
 
 const isLoading = ref(true);
 const error = ref('');
@@ -51,7 +53,15 @@ onMounted(async () => {
             if (window.opener) {
                 try {
                     // 성공 메시지 전송
-                    window.opener.postMessage({ type: 'GOOGLE_AUTH_SUCCESS' }, window.location.origin);
+                    window.opener.postMessage(
+                        {
+                            type: 'GOOGLE_AUTH_SUCCESS',
+                            userIdentifier: authStore.userIdentifier,
+                            profileUrl: authStore.profileUrl
+                        },
+                        window.location.origin
+                    );
+
                     // 창 닫힘 알림 (COOP 정책 대응)
                     window.opener.postMessage('AUTH_WINDOW_CLOSED', window.location.origin);
                 } catch (e) {
