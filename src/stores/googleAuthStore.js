@@ -56,7 +56,7 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
         loginWithGoogle() {
             const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
             const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
-            const scope = 'email profile openid';
+            const scope = 'profile';
             const state = this.generateState();
 
             // 현재 경로 저장 (콜백 후 리디렉션용)

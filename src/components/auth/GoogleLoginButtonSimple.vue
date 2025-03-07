@@ -43,7 +43,7 @@ const openGoogleAuth = () => {
         // 환경 변수에서 OAuth 설정 가져오기
         const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
         const redirectUri = import.meta.env.VITE_GOOGLE_REDIRECT_URI;
-        const scope = 'email profile openid';
+        const scope = 'profile';
 
         // OAuth URL 생성
         const authUrl = buildOAuth2Url({

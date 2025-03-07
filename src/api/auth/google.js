@@ -13,22 +13,9 @@ export const googleApi = {
             code,
             state
         });
-        return response.data;
-    },
-
-    /**
-     * Google 사용자 정보 가져오기
-     * @param {string} accessToken - Google 액세스 토큰
-     * @returns {Promise<Object>} 사용자 정보
-     */
-    async getUserInfo(accessToken) {
-        const response = await axios.get('https://www.googleapis.com/oauth2/v3/userinfo', {
-            headers: {
-                Authorization: `Bearer ${accessToken}`
-            }
-        });
-
-        return response.data;
+        const data = response.data;
+        console.log(data);
+        return data;
     },
 
     /**
