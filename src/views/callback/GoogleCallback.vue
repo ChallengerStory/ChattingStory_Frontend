@@ -41,74 +41,62 @@ onMounted(async () => {
             throw new Error('인증 파라미터가 누락되었습니다.');
         }
 
+        // 콜백 처리 전 콘솔에 로그
+        console.log('콜백 처리 시작:', { code: code.substring(0, 10) + '...', state });
+
         // 콜백 처리
         const success = await googleAuthStore.handleAuthCallback(code, state);
 
+        console.log('콜백 처리 결과:', success);
+        console.log('Auth Store 상태:', {
+            initialized: authStore.isInitialized,
+            user: authStore.user,
+            token: authStore.accessToken ? '존재함' : '없음'
+        });
+
         if (success) {
-            // 저장된 리디렉션 경로로 이동 (또는 기본 경로)
-            const redirectPath = localStorage.getItem('google_auth_redirect') || '/';
-            localStorage.removeItem('google_auth_redirect');
+            // 토큰 정보 디버깅
+            console.log('Access Token 존재 여부:', !!authStore.accessToken);
 
-            // 창을 닫거나 리디렉션
-            if (window.opener) {
-                try {
-                    console.log('Authentication successful, preparing to send data to parent window');
+            // 인증 데이터를 localStorage에 저장
+            const authData = {
+                type: 'GOOGLE_AUTH_SUCCESS',
+                timestamp: Date.now(),
+                userId: authStore.user.userId,
+                userIdentifier: authStore.user.userIdentifier,
+                profileUrl: authStore.user.profileUrl,
+                accessToken: authStore.accessToken,
+                isAuthenticated: authStore.isAuthenticated,
+                isInitialized: authStore.isInitialized
+            };
 
-                    // COOP 정책으로 인해 postMessage가 차단될 수 있으므로 localStorage를 통한 통신 방식 사용
-                    const authData = {
-                        type: 'GOOGLE_AUTH_SUCCESS',
-                        timestamp: Date.now(),
-                        userId: authStore.user.userId,
-                        userIdentifier: authStore.user.userIdentifier,
-                        profileUrl: authStore.user.profileUrl
-                    };
+            localStorage.setItem('google_auth_data', JSON.stringify(authData));
+            console.log('인증 데이터 localStorage에 저장됨:', authData);
 
-                    // localStorage에 인증 데이터 저장 (메인 창에서 polling으로 확인)
-                    localStorage.setItem('auth_popup_data', JSON.stringify(authData));
-                    console.log('Auth data stored in localStorage for parent window');
+            // 추가 디버깅용 정보
+            localStorage.setItem('callback_token_status', authStore.accessToken ? 'token_exists' : 'no_token');
 
-                    // 창 닫기 전 약간의 지연
-                    setTimeout(() => {
-                        window.close();
-                    }, 300);
-                } catch (e) {
-                    console.error('인증 데이터 저장 오류:', e);
-                    window.close();
-                }
-            } else {
-                // 일반 리디렉션인 경우
-                console.log('No parent window found, redirecting to:', redirectPath);
-                router.push(redirectPath);
-            }
+            // 창 닫기 전 지연
+            setTimeout(() => {
+                window.close();
+            }, 1000);
         }
     } catch (err) {
         error.value = `인증 오류: ${err.message}`;
         console.error('Google OAuth 콜백 오류:', err);
 
-        // 오류가 발생해도 부모 창에 알림
-        if (window.opener) {
-            try {
-                console.log('Authentication failed, storing error in localStorage for parent window');
+        // 오류 정보 저장
+        localStorage.setItem(
+            'google_auth_error',
+            JSON.stringify({
+                timestamp: Date.now(),
+                error: err.message
+            })
+        );
 
-                // localStorage를 통한 오류 전달
-                localStorage.setItem(
-                    'auth_popup_data',
-                    JSON.stringify({
-                        type: 'GOOGLE_AUTH_ERROR',
-                        timestamp: Date.now(),
-                        error: err.message
-                    })
-                );
-
-                // 지연 후 창 닫기
-                setTimeout(() => {
-                    window.close();
-                }, 300);
-            } catch (e) {
-                console.error('오류 메시지 저장 실패:', e);
-                window.close();
-            }
-        }
+        setTimeout(() => {
+            window.close();
+        }, 3000); // 오류 메시지 확인할 시간 제공
     } finally {
         isLoading.value = false;
     }

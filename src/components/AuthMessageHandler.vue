@@ -1,96 +1,102 @@
-<!-- src/components/AuthMessageHandler.vue -->
-<template>
-    <!-- 이 컴포넌트는 UI가 없는 로직 전용 컴포넌트입니다 -->
-</template>
-
+<!-- src/components/AuthHandler.vue -->
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
+import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
-const lastCheckedTimestamp = ref(Date.now());
-const pollInterval = ref(null);
+const router = useRouter();
+const interval = ref(null);
+const lastTimestamp = ref(0);
 
-// localStorage를 통한 인증 데이터 확인
-const checkForAuthData = () => {
+// localStorage에서 인증 데이터 확인
+const checkAuthData = () => {
     try {
-        const authDataString = localStorage.getItem('auth_popup_data');
-        if (!authDataString) return;
+        // 인증 성공 데이터 확인
+        const authDataStr = localStorage.getItem('google_auth_data');
+        if (authDataStr) {
+            const authData = JSON.parse(authDataStr);
 
-        const authData = JSON.parse(authDataString);
+            if (authData.timestamp > lastTimestamp.value) {
+                console.log('인증 데이터 발견:', authData);
+                lastTimestamp.value = authData.timestamp;
 
-        // 이미 처리한 데이터인지 확인 (타임스탬프 비교)
-        if (!authData.timestamp || authData.timestamp <= lastCheckedTimestamp.value) {
-            return;
-        }
+                // AuthStore 업데이트
+                if (authData.userIdentifier) {
+                    // 1. 액세스 토큰 설정
+                    if (authData.accessToken) {
+                        console.log('메인 창에서 액세스 토큰 설정:', authData.accessToken.substring(0, 15) + '...');
+                        authStore.setAccessToken(authData.accessToken);
+                        localStorage.setItem('token_sync_status', 'success');
+                    } else {
+                        console.warn('액세스 토큰이 전달되지 않음');
+                        localStorage.setItem('token_sync_status', 'missing_token');
+                    }
 
-        // 타임스탬프 업데이트
-        lastCheckedTimestamp.value = authData.timestamp;
+                    // 2. 사용자 정보 설정
+                    authStore.setUserProfile(authData.userId, authData.userIdentifier, authData.profileUrl);
 
-        console.log('Auth data found in localStorage:', authData);
+                    // 3. 인증 상태 업데이트
+                    authStore.isInitialized = true;
 
-        // 인증 성공 데이터 처리
-        if (authData.type === 'GOOGLE_AUTH_SUCCESS') {
-            const { userId, userIdentifier, profileUrl } = authData;
+                    console.log('메인 창에서 Auth Store 업데이트됨:', {
+                        user: authStore.user,
+                        isInitialized: authStore.isInitialized,
+                        isAuthenticated: authStore.isAuthenticated
+                    });
 
-            // 유저 정보가 있는지 확인
-            if (userIdentifier) {
-                console.log('Updating auth store with:', { userId, userIdentifier, profileUrl });
+                    // 데이터 처리 후 삭제
+                    localStorage.removeItem('google_auth_data');
 
-                // authStore 업데이트
-                authStore.setUserProfile(userId, userIdentifier, profileUrl);
+                    // 설정 확인을 위한 추가 저장
+                    localStorage.setItem('auth_updated_in_main', 'true');
 
-                // 인증 상태 설정
-                authStore.isInitialized = true;
-
-                // 사용한 데이터 삭제 (보안을 위해)
-                localStorage.removeItem('auth_popup_data');
-
-                console.log('Auth store updated successfully');
-
-                // 성공적으로 처리되면 이벤트 발생 (필요한 경우)
-                const event = new CustomEvent('auth:login-success', {
-                    detail: { userId, userIdentifier }
-                });
-                window.dispatchEvent(event);
+                    // 필요시 리다이렉트
+                    const redirectPath = localStorage.getItem('google_auth_redirect');
+                    if (redirectPath) {
+                        console.log('리다이렉트 경로로 이동:', redirectPath);
+                        router.push(redirectPath);
+                        localStorage.removeItem('google_auth_redirect');
+                    }
+                }
             }
         }
 
-        // 인증 오류 데이터 처리
-        if (authData.type === 'GOOGLE_AUTH_ERROR') {
-            console.error('Authentication error:', authData.error);
+        // 오류 데이터 확인
+        const errorDataStr = localStorage.getItem('google_auth_error');
+        if (errorDataStr) {
+            const errorData = JSON.parse(errorDataStr);
+            console.error('인증 오류 발견:', errorData);
 
-            // 오류 처리
-            authStore.error = authData.error;
-
-            // 사용한 데이터 삭제
-            localStorage.removeItem('auth_popup_data');
-
-            // 오류 이벤트 발생 (필요한 경우)
-            const event = new CustomEvent('auth:login-error', {
-                detail: { error: authData.error }
-            });
-            window.dispatchEvent(event);
+            authStore.error = errorData.error;
+            localStorage.removeItem('google_auth_error');
         }
     } catch (e) {
-        console.error('Error processing auth data from localStorage:', e);
+        console.error('인증 데이터 처리 오류:', e);
+        localStorage.setItem('auth_error_processing', e.message);
     }
 };
 
 onMounted(() => {
-    // 즉시 한 번 확인
-    checkForAuthData();
+    // 이미 저장된 데이터가 있는지 바로 확인
+    checkAuthData();
 
-    // 주기적으로 localStorage 확인 (300ms 간격)
-    pollInterval.value = setInterval(checkForAuthData, 300);
-    console.log('Auth data polling started');
+    // 주기적으로 확인
+    interval.value = setInterval(checkAuthData, 500);
+    console.log('인증 데이터 감시자 시작됨');
+
+    // 디버깅용: 토큰 동기화 시작 표시
+    localStorage.setItem('auth_listener_started', 'true');
 });
 
 onUnmounted(() => {
-    // 컴포넌트 언마운트 시 polling 중지
-    if (pollInterval.value) {
-        clearInterval(pollInterval.value);
-        console.log('Auth data polling stopped');
+    if (interval.value) {
+        clearInterval(interval.value);
+        console.log('인증 데이터 감시자 중지됨');
     }
 });
 </script>
+
+<template>
+    <!-- 인증 데이터 감시용 숨겨진 컴포넌트 -->
+</template>

@@ -1,8 +1,8 @@
-// src/stores/googleAuthStore.js
+// stores/google/useGoogleAuthStore.js - 개선된 버전
 import { defineStore } from 'pinia';
 import { googleApi } from '@/api/auth/google';
+import { useAuthStore } from '@/stores/auth';
 import { openOAuth2Window, buildOAuth2Url, generateOAuthState } from '@/utils/oauth2';
-import { useAuthStore } from './auth';
 
 export const useGoogleAuthStore = defineStore('googleAuth', {
     state: () => ({
@@ -73,8 +73,25 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
                 height: 600,
                 onClose: () => {
                     this.authWindow = null;
+                    // 창이 닫힐 때 localStorage 확인
+                    this.checkLocalStorageForAuthData();
                 }
             });
+        },
+
+        // 창이 닫힐 때 localStorage 확인
+        checkLocalStorageForAuthData() {
+            setTimeout(() => {
+                const authDataStr = localStorage.getItem('google_auth_data');
+                if (authDataStr) {
+                    try {
+                        console.log('팝업 창 닫힘 후 인증 데이터 발견됨');
+                        // 상위 스토어 처리에서 이미 처리 중이므로 여기서는 로그만 남김
+                    } catch (err) {
+                        console.error('팝업 창 닫힘 후 데이터 처리 오류:', err);
+                    }
+                }
+            }, 500);
         },
 
         // OAuth 콜백 처리
@@ -83,63 +100,51 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
             this.error = null;
             const authStore = useAuthStore();
 
-            console.log('Starting OAuth callback handler');
-            console.log('Code received (partial):', code.substring(0, 10) + '...');
-            console.log('State received:', returnedState);
-            console.log('Stored state:', this.state);
-            console.log('Is state valid?', this.isStateValid);
+            console.log('OAuth 콜백 처리 시작');
+            console.log('수신된 코드 (일부):', code.substring(0, 10) + '...');
+            console.log('수신된 상태:', returnedState);
+            console.log('저장된 상태:', this.state);
+            console.log('상태 유효성:', this.isStateValid);
 
             try {
                 // state 검증
                 if (!this.isStateValid || returnedState !== this.state) {
-                    console.error('State validation failed!');
-                    console.error('Stored state:', this.state);
-                    console.error('Returned state:', returnedState);
-                    console.error('State timestamp:', this.stateTimestamp);
-                    console.error('Is state valid?', this.isStateValid);
+                    console.error('State 검증 실패!');
                     throw new Error('Invalid state parameter');
                 }
 
-                console.log('State validation successful');
-                console.log('Sending code to backend for token exchange...');
+                console.log('State 검증 성공, 백엔드로 코드 전송 중...');
 
                 // 백엔드에 코드 전송하여 액세스 토큰 얻기
                 const response = await googleApi.getAccessToken(code, returnedState);
 
-                console.log('Response received from backend:', response.success ? 'Success' : 'Failed');
+                console.log('백엔드 응답 성공 여부:', response.success ? '성공' : '실패');
+
                 if (response.success) {
-                    console.log('Response data:', response.data);
-                    console.log('User identifier:', response.data.user_identifier);
-                    console.log('User ID:', response.data.user_id);
-                    console.log('Profile URL available:', !!response.data.profile_url);
-                    console.log('Access token received (partial):', response.data.access_token ? response.data.access_token.substring(0, 10) + '...' : 'No token');
-                } else {
-                    console.error('Error from backend:', response.error);
+                    console.log('응답 데이터:', response.data);
                 }
 
                 // 인증 스토어에 응답 처리 위임
-                console.log('Delegating response handling to auth store...');
+                console.log('Auth 스토어에 응답 처리 위임 중...');
                 const success = await authStore.handleGoogleAuthResponse(response);
-                console.log('Auth store processing result:', success ? 'Success' : 'Failed');
-                console.log('Auth store user after processing:', authStore.user);
+                console.log('인증 스토어 처리 결과:', success ? '성공' : '실패');
+                console.log('Auth 스토어 상태 (처리 후):', {
+                    user: authStore.user,
+                    initialized: authStore.isInitialized,
+                    authenticated: authStore.isAuthenticated
+                });
 
                 // state 초기화
-                console.log('Clearing OAuth state');
                 this.clearOAuthState();
                 return success;
             } catch (error) {
-                console.error('Auth error:', error);
-                console.error('Error details:', error.message);
-                if (error.response) {
-                    console.error('Response status:', error.response.status);
-                    console.error('Response data:', error.response.data);
-                }
+                console.error('인증 오류:', error);
                 this.error = error.message || 'Authentication failed';
                 authStore.handleAuthError(error);
                 throw error;
             } finally {
                 this.isLoading = false;
-                console.log('OAuth callback handler completed');
+                console.log('OAuth 콜백 처리 완료');
             }
         },
 
@@ -149,22 +154,6 @@ export const useGoogleAuthStore = defineStore('googleAuth', {
             this.stateTimestamp = null;
             localStorage.removeItem('google_oauth_state');
             localStorage.removeItem('google_oauth_state_timestamp');
-        },
-
-        // Google 연동 해제
-        async revokeAccess() {
-            const authStore = useAuthStore();
-
-            if (!authStore.isAuthenticated) return;
-
-            try {
-                await googleApi.revokeAccess();
-                authStore.logout();
-                return true;
-            } catch (error) {
-                console.error('Error revoking access:', error);
-                throw error;
-            }
         },
 
         // 에러 초기화
