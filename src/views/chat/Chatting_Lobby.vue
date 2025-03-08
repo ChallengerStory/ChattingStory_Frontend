@@ -23,7 +23,7 @@
 
 <script setup>
 import * as StompJS from '@stomp/stompjs';
-import { onBeforeUnmount, ref, inject, computed } from 'vue';
+import { onBeforeUnmount, ref, inject } from 'vue';
 // 반응형 상태 정의
 const messages = ref([]);
 const newMessage = ref('');
