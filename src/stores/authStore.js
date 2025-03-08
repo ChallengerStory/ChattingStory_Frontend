@@ -84,7 +84,8 @@ export const useAuthStore = defineStore('auth', {
 
                 // 사용자 정보 초기화
                 await this.initializeAuth();
-
+                localStorage.removeItem('google_auth_code');
+                localStorage.removeItem('google_auth_state');
                 return true;
             } catch (error) {
                 console.error('Google 인증 콜백 처리 오류:', error);
