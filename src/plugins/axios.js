@@ -13,7 +13,6 @@ export function setupAxiosInterceptors() {
             const authStore = useAuthStore();
             if (authStore.accessToken) {
                 config.headers['Authorization'] = `Bearer ${authStore.accessToken}`;
-                console.log('현재 요청의 헤더: ', config.headers['Authorization']);
             }
             return config;
         },
