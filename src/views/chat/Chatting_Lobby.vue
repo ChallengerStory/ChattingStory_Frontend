@@ -23,7 +23,7 @@
 
 <script setup>
 import * as StompJS from '@stomp/stompjs';
-import { onBeforeUnmount, ref } from 'vue';
+import { onBeforeUnmount, ref, inject, computed } from 'vue';
 // 반응형 상태 정의
 const messages = ref([]);
 const newMessage = ref('');
@@ -32,8 +32,8 @@ const isConnected = ref(false);
 
 // 고정값
 const roomId = '67c581e1473928720b59294f';
-const userId = '1';
-
+const user = inject('user');
+const userId = user.value.user_id;
 const stompClient = new StompJS.Client({
     brokerURL: `ws://localhost:5000/ws`
 });
@@ -92,7 +92,7 @@ const sendMessage = () => {
         destination: '/app/send-message',
         body: JSON.stringify({
             roomId: roomId,
-            senderId: userId,
+            senderId: user.value.user_id,
             content: newMessage.value,
             timestamp: new Date().toISOString()
         })
