@@ -2,13 +2,13 @@
     <ScrollPanel class="w-full h-full">
         <router-view />
     </ScrollPanel>
-    <AuthMessageHandler></AuthMessageHandler>
+    <!-- <AuthMessageHandler></AuthMessageHandler> -->
 </template>
 
 <script setup>
 import { computed, provide } from 'vue';
 import { useAuthStore } from './stores/authStore';
-import AuthMessageHandler from './components/AuthMessageHandler.vue';
+// import AuthMessageHandler from './components/auth/AuthMessageHandler.vue';
 const authStore = useAuthStore();
 
 // computed를 사용하여 authStore.user의 변경사항을 추적
