@@ -33,7 +33,6 @@ const isConnected = ref(false);
 // 고정값
 const roomId = '67c581e1473928720b59294f';
 const user = inject('user');
-const userId = user.value.user_id;
 const stompClient = new StompJS.Client({
     brokerURL: `ws://localhost:5000/ws`
 });
@@ -92,7 +91,7 @@ const sendMessage = () => {
         destination: '/app/send-message',
         body: JSON.stringify({
             roomId: roomId,
-            senderId: user.value.user_id,
+            senderId: user?.value?.user_id ?? 'undefined',
             content: newMessage.value,
             timestamp: new Date().toISOString()
         })
