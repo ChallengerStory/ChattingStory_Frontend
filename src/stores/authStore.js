@@ -1,6 +1,7 @@
-// src/stores/auth.js에 추가할 함수
+// src/stores/authStore.js
 import { defineStore } from 'pinia';
 import { googleApi } from '../api/auth/google';
+import { authApi } from '../api/auth/auth'; // Import the authApi
 import axios from 'axios';
 
 export const useAuthStore = defineStore('auth', {
@@ -14,7 +15,7 @@ export const useAuthStore = defineStore('auth', {
 
     getters: {
         isAuthenticated: (state) => !!state.accessToken
-        // hasUserProfile: (state) => !!state.user. && !!state.user.profile_url
+        // hasUserProfile: (state) => !!state.user && !!state.user.profile_url
     },
 
     actions: {
@@ -25,13 +26,12 @@ export const useAuthStore = defineStore('auth', {
             if (this.isInitialized && this.user) return true;
 
             try {
-                const response = await axios.get('/auth/refresh', {
-                    withCredentials: true
-                });
+                // Use authApi instead of direct axios call
+                const response = await authApi.refreshToken();
 
                 this.user = response.data;
                 this.isInitialized = true;
-                const newAccessToken = response.headers['authorization']?.replace('Bearer ', '');
+                const newAccessToken = response.headers?.['authorization']?.replace('Bearer ', '');
                 if (newAccessToken) {
                     this.setAccessToken(newAccessToken);
                     return true;
@@ -45,13 +45,8 @@ export const useAuthStore = defineStore('auth', {
         },
         async logout() {
             try {
-                await axios.post(
-                    '/auth/logout',
-                    {},
-                    {
-                        withCredentials: true
-                    }
-                );
+                // Use authApi instead of direct axios call
+                await authApi.logout();
             } catch (error) {
                 console.error('Logout failed:', error);
             } finally {
@@ -65,7 +60,7 @@ export const useAuthStore = defineStore('auth', {
             this.isInitialized = false;
             delete axios.defaults.headers.common['Authorization'];
         },
-        // 추가: Google 콜백 처리 함수
+
         async handleGoogleCallback(code, state) {
             this.isLoading = true;
             this.error = null;

@@ -13,7 +13,7 @@ export const authApi = {
             );
 
             console.log('토큰 갱신 응답 성공:', response.data.success);
-            return response.data;
+            return response;
         } catch (error) {
             console.error('토큰 갱신 실패:', error);
             throw error;

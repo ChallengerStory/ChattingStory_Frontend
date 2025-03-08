@@ -1,7 +1,7 @@
 <template>
-    <div>Sidebar</div>
+    <div>내 채팅방 목록</div>
 </template>
 
 <script setup></script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>
